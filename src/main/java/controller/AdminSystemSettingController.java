@@ -34,6 +34,7 @@ public class AdminSystemSettingController extends HttpServlet {
             settingDao.update("topic_publish_open", request.getParameter("topic_publish_open") != null);
             settingDao.update("student_selection_open", request.getParameter("student_selection_open") != null);
             settingDao.update("document_upload_open", request.getParameter("document_upload_open") != null);
+            settingDao.update("project_closed", request.getParameter("project_closed") != null);
         } catch (Exception e) {
             e.printStackTrace();
             throw new ServletException(e);

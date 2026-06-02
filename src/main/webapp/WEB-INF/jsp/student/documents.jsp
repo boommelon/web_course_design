@@ -30,7 +30,8 @@
                         <select name="type" class="form-select" required>
                             <option value="proposal">开题报告</option>
                             <option value="midterm">中期检查</option>
-                            <option value="final">终稿</option>
+                            <option value="final">毕业论文</option>
+                            <option value="source">源代码</option>
                         </select>
                     </div>
                     <div class="mb-3">
@@ -67,7 +68,8 @@
                         <c:choose>
                             <c:when test="${doc.type == 'proposal'}">开题报告</c:when>
                             <c:when test="${doc.type == 'midterm'}">中期检查</c:when>
-                            <c:when test="${doc.type == 'final'}">终稿</c:when>
+                            <c:when test="${doc.type == 'final'}">毕业论文</c:when>
+                            <c:when test="${doc.type == 'source'}">源代码</c:when>
                         </c:choose>
                     </td>
                     <td>${doc.createdAt}</td>

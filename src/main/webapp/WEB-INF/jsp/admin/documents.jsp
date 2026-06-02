@@ -31,6 +31,7 @@
                             <c:when test="${doc.type == 'proposal'}">开题报告</c:when>
                             <c:when test="${doc.type == 'midterm'}">中期报告</c:when>
                             <c:when test="${doc.type == 'final'}">毕业论文</c:when>
+                            <c:when test="${doc.type == 'source'}">源代码</c:when>
                         </c:choose>
                     </td>
                     <td>

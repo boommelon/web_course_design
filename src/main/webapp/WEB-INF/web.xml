@@ -70,6 +70,16 @@
         <url-pattern>/admin/users.action</url-pattern>
     </servlet-mapping>
 
+    <!-- 管理员-基础数据导入 -->
+    <servlet>
+        <servlet-name>AdminImportController</servlet-name>
+        <servlet-class>controller.AdminImportController</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>AdminImportController</servlet-name>
+        <url-pattern>/admin/import.action</url-pattern>
+    </servlet-mapping>
+
     <!-- 管理员-公告管理 -->
     <servlet>
         <servlet-name>AdminAnnouncementController</servlet-name>
@@ -140,6 +150,16 @@
         <url-pattern>/admin/templates.action</url-pattern>
     </servlet-mapping>
 
+    <!-- 管理员-答辩结束与归档 -->
+    <servlet>
+        <servlet-name>AdminArchiveController</servlet-name>
+        <servlet-class>controller.AdminArchiveController</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>AdminArchiveController</servlet-name>
+        <url-pattern>/admin/archive.action</url-pattern>
+    </servlet-mapping>
+
     <!-- 教师-课题管理 -->
     <servlet>
         <servlet-name>TeacherTopicController</servlet-name>
@@ -208,6 +228,16 @@
     <servlet-mapping>
         <servlet-name>TeacherDefenseController</servlet-name>
         <url-pattern>/teacher/defense.action</url-pattern>
+    </servlet-mapping>
+
+    <!-- 教师-自评互评成绩 -->
+    <servlet>
+        <servlet-name>TeacherEvaluationController</servlet-name>
+        <servlet-class>controller.TeacherEvaluationController</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>TeacherEvaluationController</servlet-name>
+        <url-pattern>/teacher/evaluations.action</url-pattern>
     </servlet-mapping>
 
     <!-- 学生-浏览课题 -->

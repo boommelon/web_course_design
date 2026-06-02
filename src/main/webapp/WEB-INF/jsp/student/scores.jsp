@@ -25,6 +25,23 @@
         </div>
     </div>
 
+    <div class="card mb-4">
+        <div class="card-header">自评互评与综合成绩</div>
+        <div class="card-body">
+            <c:choose>
+                <c:when test="${evaluation != null}">
+                    <p class="mb-1">课题：<strong>${evaluation.topicTitle}</strong></p>
+                    <p class="mb-1">综合成绩：<strong>${evaluation.score}</strong> 分</p>
+                    <p class="mb-1">教师自评意见：${evaluation.selfComment}</p>
+                    <p class="mb-0">互评意见：${evaluation.peerComment}</p>
+                </c:when>
+                <c:otherwise>
+                    <p class="text-muted mb-0">暂无自评互评成绩。</p>
+                </c:otherwise>
+            </c:choose>
+        </div>
+    </div>
+
     <h5>阶段文档成绩</h5>
     <table class="table table-bordered table-hover">
         <thead class="table-light">
@@ -45,7 +62,8 @@
                         <c:choose>
                             <c:when test="${doc.type == 'proposal'}">开题报告</c:when>
                             <c:when test="${doc.type == 'midterm'}">中期检查</c:when>
-                            <c:when test="${doc.type == 'final'}">终稿</c:when>
+                            <c:when test="${doc.type == 'final'}">毕业论文</c:when>
+                            <c:when test="${doc.type == 'source'}">源代码</c:when>
                         </c:choose>
                     </td>
                     <td>${doc.topicTitle}</td>

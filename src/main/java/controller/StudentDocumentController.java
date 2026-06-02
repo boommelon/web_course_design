@@ -19,7 +19,7 @@ import java.io.IOException;
 /**
  * 学生-文档提交控制器
  * GET: 查看已提交的文档列表
- * POST: 提交新文档（开题报告/中期检查/终稿）
+ * POST: 提交新文档（开题报告/中期检查/毕业论文/源代码）
  */
 @MultipartConfig(maxFileSize = 20 * 1024 * 1024, maxRequestSize = 25 * 1024 * 1024)
 public class StudentDocumentController extends HttpServlet {

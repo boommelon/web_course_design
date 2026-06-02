@@ -28,6 +28,11 @@
                            <c:if test="${settings.document_upload_open == 'true'}">checked</c:if>>
                     <label class="form-check-label" for="documentUploadOpen">学生文档上传开放</label>
                 </div>
+                <div class="form-check form-switch mb-3">
+                    <input class="form-check-input" type="checkbox" name="project_closed" id="projectClosed"
+                           <c:if test="${settings.project_closed == 'true'}">checked</c:if>>
+                    <label class="form-check-label" for="projectClosed">答辩结束，后期归档完成</label>
+                </div>
                 <button type="submit" class="btn btn-primary">保存设置</button>
             </form>
         </div>

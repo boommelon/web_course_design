@@ -3,6 +3,7 @@ package controller;
 import bean.User;
 import dao.DefenseScoreDao;
 import dao.DocumentDao;
+import dao.EvaluationDao;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -18,6 +19,7 @@ public class StudentScoreController extends HttpServlet {
 
     private DocumentDao documentDao = new DocumentDao();
     private DefenseScoreDao defenseDao = new DefenseScoreDao();
+    private EvaluationDao evaluationDao = new EvaluationDao();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -26,6 +28,7 @@ public class StudentScoreController extends HttpServlet {
         try {
             request.setAttribute("documents", documentDao.findByStudent(user.getId()));
             request.setAttribute("defenseScore", defenseDao.findByStudent(user.getId()));
+            request.setAttribute("evaluation", evaluationDao.findByStudent(user.getId()));
         } catch (Exception e) {
             e.printStackTrace();
             throw new ServletException(e);

@@ -115,6 +115,18 @@ public class UserDao {
     }
 
     /**
+     * 导入用户。用户名已存在时更新基础信息，密码随导入文件同步更新。
+     */
+    public void upsertImported(User user) throws SQLException {
+        String sql = "INSERT INTO users(username, password, name, role, email, phone) VALUES(?,?,?,?,?,?) "
+                + "ON DUPLICATE KEY UPDATE password=VALUES(password), name=VALUES(name), "
+                + "role=VALUES(role), email=VALUES(email), phone=VALUES(phone)";
+        String md5Pass = PasswordUtil.md5(user.getPassword());
+        SQLHelper.executeUpdate(sql, user.getUsername(), md5Pass,
+                user.getName(), user.getRole(), user.getEmail(), user.getPhone());
+    }
+
+    /**
      * 修改用户信息（不修改密码）
      */
     public void update(User user) throws SQLException {

@@ -35,6 +35,16 @@ public class DefenseScoreDao {
         SQLHelper.executeUpdate(sql, studentId, topicId, teacherId, score, comment);
     }
 
+    public int count() throws SQLException {
+        ResultSet rs = SQLHelper.executeQuery("SELECT COUNT(*) FROM defense_scores");
+        try {
+            rs.next();
+            return rs.getInt(1);
+        } finally {
+            SQLHelper.close(rs);
+        }
+    }
+
     private List<DefenseScore> toList(ResultSet rs) throws SQLException {
         List<DefenseScore> list = new ArrayList<DefenseScore>();
         while (rs.next()) list.add(row(rs));

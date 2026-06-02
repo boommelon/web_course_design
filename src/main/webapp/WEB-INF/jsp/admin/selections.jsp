@@ -36,6 +36,91 @@
     </div>
 
     <div class="card mb-4">
+        <div class="card-header">第二轮选题名单确认</div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <h6>将要进行第二轮选题的学生名单</h6>
+                    <table class="table table-sm table-bordered">
+                        <thead class="table-light">
+                            <tr>
+                                <th>姓名</th>
+                                <th>用户名</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <c:forEach var="student" items="${unselectedStudents}">
+                                <tr>
+                                    <td>${student.name}</td>
+                                    <td>${student.username}</td>
+                                </tr>
+                            </c:forEach>
+                        </tbody>
+                    </table>
+                    <c:if test="${empty unselectedStudents}">
+                        <p class="text-muted mb-0">暂无需要进入第二轮的学生。</p>
+                    </c:if>
+                </div>
+                <div class="col-md-6">
+                    <h6>第二轮可选题目名单</h6>
+                    <table class="table table-sm table-bordered">
+                        <thead class="table-light">
+                            <tr>
+                                <th>课题</th>
+                                <th>指导教师</th>
+                                <th>名额</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <c:forEach var="topic" items="${availableTopics}">
+                                <tr>
+                                    <td>${topic.title}</td>
+                                    <td>${topic.teacherName}</td>
+                                    <td>${topic.selectedCount}/${topic.maxStudents}</td>
+                                </tr>
+                            </c:forEach>
+                        </tbody>
+                    </table>
+                    <c:if test="${empty availableTopics}">
+                        <p class="text-muted mb-0">暂无第二轮可选题目。</p>
+                    </c:if>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header">最终未选题名单与未被选择题目名单</div>
+        <div class="card-body">
+            <p class="text-muted">关闭第二轮选题后，以下学生和课题用于最终人工分配。</p>
+            <div class="row">
+                <div class="col-md-6">
+                    <h6>最终还未选题的学生名单</h6>
+                    <ul class="list-group">
+                        <c:forEach var="student" items="${unselectedStudents}">
+                            <li class="list-group-item">${student.name}（${student.username}）</li>
+                        </c:forEach>
+                    </ul>
+                    <c:if test="${empty unselectedStudents}">
+                        <p class="text-muted mb-0">所有学生均已确定选题。</p>
+                    </c:if>
+                </div>
+                <div class="col-md-6">
+                    <h6>最终未被选择的题目名单</h6>
+                    <ul class="list-group">
+                        <c:forEach var="topic" items="${availableTopics}">
+                            <li class="list-group-item">${topic.title} - ${topic.teacherName}（${topic.selectedCount}/${topic.maxStudents}）</li>
+                        </c:forEach>
+                    </ul>
+                    <c:if test="${empty availableTopics}">
+                        <p class="text-muted mb-0">暂无可分配课题。</p>
+                    </c:if>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mb-4">
         <div class="card-header">最终分配未选题学生</div>
         <div class="card-body">
             <form action="${pageContext.request.contextPath}/admin/selections.action" method="post" class="row g-3">

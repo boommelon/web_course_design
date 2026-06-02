@@ -108,6 +108,26 @@ public class DocumentDao {
         }
     }
 
+    public int countByStatus(String status) throws SQLException {
+        ResultSet rs = SQLHelper.executeQuery("SELECT COUNT(*) FROM documents WHERE status=?", status);
+        try {
+            rs.next();
+            return rs.getInt(1);
+        } finally {
+            SQLHelper.close(rs);
+        }
+    }
+
+    public int count() throws SQLException {
+        ResultSet rs = SQLHelper.executeQuery("SELECT COUNT(*) FROM documents");
+        try {
+            rs.next();
+            return rs.getInt(1);
+        } finally {
+            SQLHelper.close(rs);
+        }
+    }
+
     private List<Document> resultSetToList(ResultSet rs) throws SQLException {
         List<Document> list = new ArrayList<Document>();
         while (rs.next()) {

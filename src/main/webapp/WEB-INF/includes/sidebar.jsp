@@ -11,6 +11,7 @@
     <!-- 管理员菜单 -->
     <c:if test="${sessionScope.loginUser.role == 'admin'}">
         <a href="${pageContext.request.contextPath}/admin/users.action">用户管理</a>
+        <a href="${pageContext.request.contextPath}/admin/import.action">数据导入</a>
         <a href="${pageContext.request.contextPath}/admin/topics.action">课题审核</a>
         <a href="${pageContext.request.contextPath}/admin/selections.action">在线选题管理</a>
         <a href="${pageContext.request.contextPath}/admin/groups.action">教师分组</a>
@@ -18,6 +19,7 @@
         <a href="${pageContext.request.contextPath}/admin/templates.action">文件模板管理</a>
         <a href="${pageContext.request.contextPath}/admin/announcements.action">公告管理</a>
         <a href="${pageContext.request.contextPath}/admin/settings.action">系统开关</a>
+        <a href="${pageContext.request.contextPath}/admin/archive.action">后期归档</a>
     </c:if>
 
     <!-- 教师菜单 -->
@@ -27,6 +29,7 @@
         <a href="${pageContext.request.contextPath}/teacher/resources.action">资料管理</a>
         <a href="${pageContext.request.contextPath}/teacher/selections.action">选题审批</a>
         <a href="${pageContext.request.contextPath}/teacher/documents.action">文档审核</a>
+        <a href="${pageContext.request.contextPath}/teacher/evaluations.action">自评互评</a>
         <a href="${pageContext.request.contextPath}/teacher/questions.action">答疑管理</a>
         <a href="${pageContext.request.contextPath}/teacher/defense.action">答辩评分</a>
     </c:if>

@@ -31,7 +31,8 @@
                         <c:choose>
                             <c:when test="${doc.type == 'proposal'}">开题报告</c:when>
                             <c:when test="${doc.type == 'midterm'}">中期检查</c:when>
-                            <c:when test="${doc.type == 'final'}">终稿</c:when>
+                            <c:when test="${doc.type == 'final'}">毕业论文</c:when>
+                            <c:when test="${doc.type == 'source'}">源代码</c:when>
                         </c:choose>
                     </td>
                     <td>${doc.content}</td>
