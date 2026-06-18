@@ -1,0 +1,243 @@
+:root {
+    --academic-primary: #2b6cb0;
+    --academic-success: #38a169;
+    --academic-danger: #c53030;
+    --academic-sidebar-bg: #f0f4f8;
+    --academic-sidebar-text: #4a5568;
+    --academic-active-bg: #e8f4fd;
+    --academic-main-bg: #fafbfc;
+    --academic-border: #e2e8f0;
+    --academic-header-bg: #f7fafc;
+    --academic-text: #2d3748;
+    --academic-muted: #718096;
+}
+
+body {
+    color: var(--academic-text);
+    background: var(--academic-main-bg);
+    font-family: "Microsoft YaHei", "PingFang SC", Arial, sans-serif;
+}
+
+.sidebar {
+    background: var(--academic-sidebar-bg);
+    border-right: 1px solid var(--academic-border);
+}
+
+.sidebar .brand {
+    color: var(--academic-primary);
+    border-bottom: 1px solid var(--academic-border);
+    letter-spacing: 0;
+}
+
+.sidebar a {
+    color: var(--academic-sidebar-text);
+    border-left: 4px solid transparent;
+    transition: background-color 0.18s ease, color 0.18s ease, border-color 0.18s ease;
+}
+
+.sidebar a:hover,
+.sidebar a:focus {
+    color: var(--academic-primary);
+    background: #edf6ff;
+}
+
+.sidebar a.active {
+    color: var(--academic-primary);
+    background: var(--academic-active-bg);
+    border-left-color: var(--academic-primary);
+    font-weight: 600;
+}
+
+.sidebar .logout {
+    border-top: 1px solid var(--academic-border);
+}
+
+.main-content {
+    background: var(--academic-main-bg);
+}
+
+.page-header {
+    border-bottom: 1px solid var(--academic-border);
+}
+
+.page-header h4 {
+    color: var(--academic-text);
+    font-weight: 600;
+}
+
+.card {
+    border: 1px solid var(--academic-border);
+    border-radius: 10px;
+    box-shadow: 0 4px 14px rgba(45, 55, 72, 0.06);
+    transition: box-shadow 0.18s ease, transform 0.18s ease;
+}
+
+.card:hover {
+    box-shadow: 0 8px 24px rgba(45, 55, 72, 0.1);
+}
+
+.card-header {
+    background: var(--academic-header-bg);
+    border-bottom: 1px solid var(--academic-border);
+    color: var(--academic-text);
+    font-weight: 600;
+}
+
+.table {
+    overflow: hidden;
+    border-color: var(--academic-border);
+    border-radius: 10px;
+    box-shadow: 0 3px 12px rgba(45, 55, 72, 0.04);
+}
+
+.table > :not(caption) > * > * {
+    border-color: var(--academic-border);
+}
+
+.table-light th,
+.table-light td,
+.table thead th {
+    background: var(--academic-header-bg);
+    color: var(--academic-sidebar-text);
+    font-weight: 600;
+}
+
+.table-hover tbody tr:hover {
+    background-color: #f7fbff;
+}
+
+.btn {
+    border-radius: 6px;
+    font-weight: 500;
+}
+
+.btn-primary {
+    background-color: var(--academic-primary);
+    border-color: var(--academic-primary);
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+    background-color: #255f9c;
+    border-color: #255f9c;
+}
+
+.btn-success {
+    background-color: var(--academic-success);
+    border-color: var(--academic-success);
+}
+
+.btn-success:hover,
+.btn-success:focus {
+    background-color: #2f8d5b;
+    border-color: #2f8d5b;
+}
+
+.btn-danger {
+    background-color: var(--academic-danger);
+    border-color: var(--academic-danger);
+}
+
+.btn-danger:hover,
+.btn-danger:focus {
+    background-color: #a82828;
+    border-color: #a82828;
+}
+
+.btn-outline-primary {
+    color: var(--academic-primary);
+    border-color: var(--academic-primary);
+}
+
+.btn-outline-primary:hover {
+    background-color: var(--academic-primary);
+    border-color: var(--academic-primary);
+}
+
+.btn-outline-success {
+    color: var(--academic-success);
+    border-color: var(--academic-success);
+}
+
+.btn-outline-success:hover {
+    background-color: var(--academic-success);
+    border-color: var(--academic-success);
+}
+
+.btn-outline-danger {
+    color: var(--academic-danger);
+    border-color: var(--academic-danger);
+}
+
+.btn-outline-danger:hover {
+    background-color: var(--academic-danger);
+    border-color: var(--academic-danger);
+}
+
+.form-control,
+.form-select {
+    border-color: #cbd5e0;
+    border-radius: 6px;
+}
+
+.form-control:focus,
+.form-select:focus,
+.form-check-input:focus {
+    border-color: var(--academic-primary);
+    box-shadow: 0 0 0 0.2rem rgba(43, 108, 176, 0.18);
+}
+
+.modal-content {
+    border: 0;
+    border-radius: 16px;
+    box-shadow: 0 18px 50px rgba(45, 55, 72, 0.18);
+}
+
+.modal-header,
+.modal-footer {
+    border-color: var(--academic-border);
+}
+
+.badge.bg-primary {
+    background-color: var(--academic-primary) !important;
+}
+
+.text-primary {
+    color: var(--academic-primary) !important;
+}
+
+.badge.bg-success {
+    background-color: var(--academic-success) !important;
+}
+
+.text-success {
+    color: var(--academic-success) !important;
+}
+
+.badge.bg-danger {
+    background-color: var(--academic-danger) !important;
+}
+
+.text-danger {
+    color: var(--academic-danger) !important;
+}
+
+.badge {
+    border-radius: 6px;
+}
+
+.login-box {
+    background: #ffffff;
+    border: 1px solid var(--academic-border);
+    border-radius: 14px;
+    box-shadow: 0 12px 36px rgba(45, 55, 72, 0.12);
+}
+
+.login-box h3 {
+    color: var(--academic-primary);
+    font-weight: 600;
+}
+
+.login-page {
+    background: linear-gradient(135deg, #f0f4f8 0%, #e8f4fd 100%);
+}

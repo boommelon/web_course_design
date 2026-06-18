@@ -70,6 +70,26 @@
         <url-pattern>/admin/users.action</url-pattern>
     </servlet-mapping>
 
+    <!-- Ajax-用户删除 -->
+    <servlet>
+        <servlet-name>AjaxUserController</servlet-name>
+        <servlet-class>controller.AjaxUserController</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>AjaxUserController</servlet-name>
+        <url-pattern>/api/user/delete.action</url-pattern>
+    </servlet-mapping>
+
+    <!-- Ajax-用户名检测 -->
+    <servlet>
+        <servlet-name>AjaxCheckUsernameController</servlet-name>
+        <servlet-class>controller.AjaxCheckUsernameController</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>AjaxCheckUsernameController</servlet-name>
+        <url-pattern>/api/user/checkUsername.action</url-pattern>
+    </servlet-mapping>
+
     <!-- 管理员-基础数据导入 -->
     <servlet>
         <servlet-name>AdminImportController</servlet-name>
@@ -88,6 +108,16 @@
     <servlet-mapping>
         <servlet-name>AdminAnnouncementController</servlet-name>
         <url-pattern>/admin/announcements.action</url-pattern>
+    </servlet-mapping>
+
+    <!-- Ajax-公告删除 -->
+    <servlet>
+        <servlet-name>AjaxAnnouncementController</servlet-name>
+        <servlet-class>controller.AjaxAnnouncementController</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>AjaxAnnouncementController</servlet-name>
+        <url-pattern>/api/announcement/delete.action</url-pattern>
     </servlet-mapping>
 
     <!-- 管理员-课题审核 -->

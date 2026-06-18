@@ -23,7 +23,7 @@
         </thead>
         <tbody>
             <c:forEach var="ann" items="${announcements}">
-                <tr>
+                <tr data-announcement-id="${ann.id}">
                     <td>${ann.id}</td>
                     <td>${ann.title}</td>
                     <td>
@@ -33,9 +33,7 @@
                     <td>${ann.createdAt}</td>
                     <td>
                         <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#editModal${ann.id}">编辑</button>
-                        <a href="${pageContext.request.contextPath}/admin/announcements.action?action=delete&id=${ann.id}"
-                           class="btn btn-danger btn-sm"
-                           onclick="return confirm('确定删除该公告？')">删除</a>
+                        <button type="button" class="btn btn-danger btn-sm ajax-delete-announcement" data-id="${ann.id}">删除</button>
                     </td>
                 </tr>
 

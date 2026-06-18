@@ -57,6 +57,12 @@ public class AuthFilter implements Filter {
             resp.sendRedirect(req.getContextPath() + "/dashboard.action");
             return;
         }
+        if (path.startsWith("/api/") && !"admin".equals(role)) {
+            resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            resp.setContentType("application/json;charset=UTF-8");
+            resp.getWriter().write("{\"success\":false,\"message\":\"无权限\"}");
+            return;
+        }
         if (path.startsWith("/teacher/") && !"teacher".equals(role)) {
             resp.sendRedirect(req.getContextPath() + "/dashboard.action");
             return;

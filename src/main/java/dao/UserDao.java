@@ -105,6 +105,22 @@ public class UserDao {
     }
 
     /**
+     * 根据用户名查询用户
+     */
+    public User findByUsername(String username) throws SQLException {
+        String sql = "SELECT * FROM users WHERE username=?";
+        ResultSet rs = SQLHelper.executeQuery(sql, username);
+        try {
+            if (rs.next()) {
+                return rowToUser(rs);
+            }
+            return null;
+        } finally {
+            SQLHelper.close(rs);
+        }
+    }
+
+    /**
      * 新增用户（密码会自动MD5加密）
      */
     public void insert(User user) throws SQLException {

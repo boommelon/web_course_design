@@ -6,9 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>毕业设计管理系统 - 登录</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="${pageContext.request.contextPath}/static/css/academic.css" rel="stylesheet">
     <style>
         body {
-            background-color: #f5f5f5;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -17,18 +17,14 @@
         .login-box {
             width: 400px;
             padding: 30px;
-            background: #fff;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
         .login-box h3 {
             text-align: center;
             margin-bottom: 25px;
-            color: #333;
         }
     </style>
 </head>
-<body>
+<body class="login-page">
     <div class="login-box">
         <h3>毕业设计管理系统</h3>
 

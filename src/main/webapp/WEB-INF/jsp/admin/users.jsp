@@ -33,7 +33,7 @@
         </thead>
         <tbody>
             <c:forEach var="user" items="${users}">
-                <tr>
+                <tr data-user-id="${user.id}">
                     <td>${user.id}</td>
                     <td>${user.username}</td>
                     <td>${user.name}</td>
@@ -48,9 +48,7 @@
                     <td>${user.phone}</td>
                     <td>
                         <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#editUserModal${user.id}">编辑</button>
-                        <a href="${pageContext.request.contextPath}/admin/users.action?action=delete&id=${user.id}"
-                           class="btn btn-danger btn-sm"
-                           onclick="return confirm('确定要删除该用户吗？')">删除</a>
+                        <button type="button" class="btn btn-danger btn-sm ajax-delete-user" data-id="${user.id}">删除</button>
                     </td>
                 </tr>
 
@@ -115,7 +113,8 @@
                     <div class="modal-body">
                         <div class="mb-3">
                             <label class="form-label">用户名</label>
-                            <input type="text" name="username" class="form-control" required>
+                            <input type="text" name="username" class="form-control" id="addUsername" required>
+                            <div class="form-text username-check-message"></div>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">密码</label>
@@ -144,7 +143,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
-                        <button type="submit" class="btn btn-primary">确定添加</button>
+                        <button type="submit" class="btn btn-primary add-user-submit">确定添加</button>
                     </div>
                 </form>
             </div>
