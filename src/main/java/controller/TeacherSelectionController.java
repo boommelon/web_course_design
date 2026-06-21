@@ -2,8 +2,10 @@ package controller;
 
 import bean.User;
 import bean.Topic;
+import bean.TopicSelection;
 import dao.TopicDao;
 import dao.TopicSelectionDao;
+import util.ParamUtil;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -35,25 +37,38 @@ public class TeacherSelectionController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        int id = Integer.parseInt(request.getParameter("id"));
-        int topicId = Integer.parseInt(request.getParameter("topicId"));
-        String action = request.getParameter("action");
+        User user = (User) request.getSession().getAttribute("loginUser");
+        Integer id = ParamUtil.getInt(request, "id");
+        if (id == null) {
+            response.sendRedirect(request.getContextPath() + "/teacher/selections.opttype");
+            return;
+        }
+        String opttype = request.getParameter("opttype");
 
         try {
-            if ("approve".equals(action)) {
-                Topic topic = topicDao.findById(topicId);
-                if (topic != null && topic.getSelectedCount() < topic.getMaxStudents()) {
-                    selectionDao.updateStatus(id, "approved");
-                    topicDao.incrementSelected(topicId);
-                    topicDao.closeIfFull(topicId);
+            if ("approve".equals(opttype)) {
+                TopicSelection selection = selectionDao.findById(id);
+                if (selection == null) {
+                    response.sendRedirect(request.getContextPath() + "/teacher/selections.opttype");
+                    return;
                 }
-            } else if ("reject".equals(action)) {
-                selectionDao.updateStatus(id, "rejected");
+                int realTopicId = selection.getTopicId();
+                Topic topic = topicDao.findById(realTopicId);
+                if (topic != null && topic.getTeacherId() == user.getId()
+                        && topic.getSelectedCount() < topic.getMaxStudents()) {
+                    int rows = selectionDao.updateStatus(id, "approved", user.getId());
+                    if (rows > 0) {
+                        topicDao.incrementSelected(realTopicId);
+                        topicDao.closeIfFull(realTopicId);
+                    }
+                }
+            } else if ("reject".equals(opttype)) {
+                selectionDao.updateStatus(id, "rejected", user.getId());
             }
         } catch (Exception e) {
             e.printStackTrace();
             throw new ServletException(e);
         }
-        response.sendRedirect(request.getContextPath() + "/teacher/selections.action");
+        response.sendRedirect(request.getContextPath() + "/teacher/selections.opttype");
     }
 }

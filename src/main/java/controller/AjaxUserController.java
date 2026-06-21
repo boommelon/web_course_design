@@ -2,6 +2,7 @@ package controller;
 
 import bean.User;
 import dao.UserDao;
+import util.ParamUtil;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -26,11 +27,13 @@ public class AjaxUserController extends HttpServlet {
         }
 
         try {
-            int id = Integer.parseInt(request.getParameter("id"));
+            Integer id = ParamUtil.getInt(request, "id");
+            if (id == null) {
+                writeJson(response, HttpServletResponse.SC_BAD_REQUEST, "{\"success\":false,\"message\":\"参数错误\"}");
+                return;
+            }
             userDao.delete(id);
             writeJson(response, HttpServletResponse.SC_OK, "{\"success\":true}");
-        } catch (NumberFormatException e) {
-            writeJson(response, HttpServletResponse.SC_BAD_REQUEST, "{\"success\":false,\"message\":\"参数错误\"}");
         } catch (Exception e) {
             e.printStackTrace();
             writeJson(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "{\"success\":false,\"message\":\"删除失败\"}");

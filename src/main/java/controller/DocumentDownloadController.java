@@ -3,6 +3,7 @@ package controller;
 import bean.Document;
 import bean.User;
 import dao.DocumentDao;
+import util.ParamUtil;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
@@ -24,7 +25,11 @@ public class DocumentDownloadController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        int id = Integer.parseInt(request.getParameter("id"));
+        Integer id = ParamUtil.getInt(request, "id");
+        if (id == null) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            return;
+        }
         User user = (User) request.getSession().getAttribute("loginUser");
 
         try {

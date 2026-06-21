@@ -55,7 +55,7 @@
                         <div class="modal-content">
                             <form action="${pageContext.request.contextPath}/admin/topics.action" method="post">
                                 <input type="hidden" name="id" value="${topic.id}">
-                                <input type="hidden" name="action" value="edit">
+                                <input type="hidden" name="opttype" value="edit">
                                 <div class="modal-header">
                                     <h5 class="modal-title">调整课题</h5>
                                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
@@ -95,7 +95,7 @@
                         <div class="modal-content">
                             <form action="${pageContext.request.contextPath}/admin/topics.action" method="post">
                                 <input type="hidden" name="id" value="${topic.id}">
-                                <input type="hidden" name="action" value="approve">
+                                <input type="hidden" name="opttype" value="approve">
                                 <div class="modal-header">
                                     <h5 class="modal-title">通过课题</h5>
                                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
@@ -119,7 +119,7 @@
                         <div class="modal-content">
                             <form action="${pageContext.request.contextPath}/admin/topics.action" method="post">
                                 <input type="hidden" name="id" value="${topic.id}">
-                                <input type="hidden" name="action" value="reject">
+                                <input type="hidden" name="opttype" value="reject">
                                 <div class="modal-header">
                                     <h5 class="modal-title">驳回课题</h5>
                                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>

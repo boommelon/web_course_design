@@ -29,7 +29,8 @@
 ├── sql
 │   └── init.sql    # 数据库初始化脚本
 ├── scripts         # 本地 Tomcat 部署脚本
-└── docs            # 课程文档
+└── docs            # 课程文档、项目报告和截图
+    └── screenshots # 页面效果截图
 ```
 
 ## 已实现功能
@@ -132,6 +133,13 @@ mvn clean package
 .\scripts\quick-deploy-tomcat9.ps1 -ProjectDir "E:\Desktop\web_course_design" -TomcatHome "E:\apache-tomcat-9.0.115" -ContextPath "graduation-design" -Port 8080
 ```
 
+如果 MySQL root 账号有密码，启动 Tomcat 时必须把数据库密码传给 JVM。否则会出现 `Access denied for user 'root'@'localhost' (using password: NO)`：
+
+```powershell
+.\scripts\stop-tomcat9.ps1 -TomcatHome "E:\apache-tomcat-9.0.115" -Port 8080
+.\scripts\quick-deploy-tomcat9.ps1 -ProjectDir "E:\Desktop\web_course_design" -TomcatHome "E:\apache-tomcat-9.0.115" -ContextPath "graduation-design" -Port 8080 -DbUsername "root" -DbPassword "你的MySQL密码"
+```
+
 部署成功后访问：
 
 ```text
@@ -151,6 +159,6 @@ http://localhost:8080/graduation-design/
 
 ## GitHub 上传说明
 
-建议上传当前 Maven 项目主体即可，`target/`、IDE 配置、临时文件、上传文件目录已经通过 `.gitignore` 排除。
+建议上传当前 Maven 项目主体即可，`target/`、`example/`、IDE 配置、临时文件、上传文件目录已经通过 `.gitignore` 或本次清理排除。
 
-如果任务书文档仍在根目录，是因为该文件可能正在被 Word 占用；关闭 Word 后可以移动到 `docs/` 目录再上传。
+课程报告、任务书和页面截图已经统一放在 `docs/` 目录下，根目录只保留项目入口文件和源码目录。

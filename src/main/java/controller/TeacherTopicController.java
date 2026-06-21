@@ -4,6 +4,7 @@ import bean.Topic;
 import bean.User;
 import dao.SystemSettingDao;
 import dao.TopicDao;
+import util.ParamUtil;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -23,12 +24,18 @@ public class TeacherTopicController extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         User user = (User) request.getSession().getAttribute("loginUser");
-        String action = request.getParameter("action");
+        String opttype = request.getParameter("opttype");
         try {
-            if ("delete".equals(action)) {
-                int id = Integer.parseInt(request.getParameter("id"));
-                topicDao.delete(id);
-                response.sendRedirect(request.getContextPath() + "/teacher/topics.action");
+            if ("delete".equals(opttype)) {
+                Integer id = ParamUtil.getInt(request, "id");
+                if (id != null) {
+                    int rows = topicDao.delete(id, user.getId());
+                    if (rows == 0) {
+                        response.sendRedirect(request.getContextPath() + "/teacher/topics.opttype");
+                        return;
+                    }
+                }
+                response.sendRedirect(request.getContextPath() + "/teacher/topics.opttype");
                 return;
             }
             request.setAttribute("topics", topicDao.findByTeacher(user.getId()));
@@ -44,32 +51,47 @@ public class TeacherTopicController extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         User user = (User) request.getSession().getAttribute("loginUser");
-        String action = request.getParameter("action");
+        String opttype = request.getParameter("opttype");
         try {
-            if ("add".equals(action)) {
+            if ("add".equals(opttype)) {
                 if (!settingDao.isOpen("topic_publish_open")) {
-                    response.sendRedirect(request.getContextPath() + "/teacher/topics.action");
+                    response.sendRedirect(request.getContextPath() + "/teacher/topics.opttype");
+                    return;
+                }
+                Integer maxStudents = ParamUtil.getInt(request, "maxStudents");
+                if (maxStudents == null) {
+                    response.sendRedirect(request.getContextPath() + "/teacher/topics.opttype");
                     return;
                 }
                 Topic topic = new Topic();
                 topic.setTitle(request.getParameter("title"));
                 topic.setDescription(request.getParameter("description"));
                 topic.setTeacherId(user.getId());
-                topic.setMaxStudents(Integer.parseInt(request.getParameter("maxStudents")));
+                topic.setMaxStudents(maxStudents);
                 topicDao.insert(topic);
-            } else if ("edit".equals(action)) {
+            } else if ("edit".equals(opttype)) {
+                Integer id = ParamUtil.getInt(request, "id");
+                Integer maxStudents = ParamUtil.getInt(request, "maxStudents");
+                if (id == null || maxStudents == null) {
+                    response.sendRedirect(request.getContextPath() + "/teacher/topics.opttype");
+                    return;
+                }
                 Topic topic = new Topic();
-                topic.setId(Integer.parseInt(request.getParameter("id")));
+                topic.setId(id);
                 topic.setTitle(request.getParameter("title"));
                 topic.setDescription(request.getParameter("description"));
-                topic.setMaxStudents(Integer.parseInt(request.getParameter("maxStudents")));
+                topic.setMaxStudents(maxStudents);
                 topic.setStatus(request.getParameter("status"));
-                topicDao.update(topic);
+                int rows = topicDao.update(topic, user.getId());
+                if (rows == 0) {
+                    response.sendRedirect(request.getContextPath() + "/teacher/topics.opttype");
+                    return;
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
             throw new ServletException(e);
         }
-        response.sendRedirect(request.getContextPath() + "/teacher/topics.action");
+        response.sendRedirect(request.getContextPath() + "/teacher/topics.opttype");
     }
 }

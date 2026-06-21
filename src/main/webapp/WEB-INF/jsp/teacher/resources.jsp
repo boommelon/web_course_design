@@ -45,7 +45,7 @@
                     <td>${res.createdAt}</td>
                     <td>
                         <a class="btn btn-outline-primary btn-sm" href="${pageContext.request.contextPath}/resources/download.action?type=resource&id=${res.id}">下载</a>
-                        <a class="btn btn-danger btn-sm" href="${pageContext.request.contextPath}/teacher/resources.action?action=delete&id=${res.id}" onclick="return confirm('确定删除该资料？')">删除</a>
+                        <a class="btn btn-danger btn-sm" href="${pageContext.request.contextPath}/teacher/resources.action?opttype=delete&id=${res.id}" onclick="return confirm('确定删除该资料？')">删除</a>
                     </td>
                 </tr>
             </c:forEach>

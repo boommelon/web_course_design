@@ -5,7 +5,7 @@
 <div class="sidebar">
     <div class="brand">毕业设计管理系统</div>
 
-    <a href="${pageContext.request.contextPath}/dashboard.action">仪表盘</a>
+    <a href="${pageContext.request.contextPath}/dashboard.action">首页</a>
     <a href="${pageContext.request.contextPath}/profile.action">个人资料</a>
 
     <!-- 管理员菜单 -->

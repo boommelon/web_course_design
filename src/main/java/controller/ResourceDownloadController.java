@@ -3,6 +3,7 @@ package controller;
 import bean.FileItem;
 import dao.FileTemplateDao;
 import dao.TeacherResourceDao;
+import util.ParamUtil;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
@@ -23,7 +24,11 @@ public class ResourceDownloadController extends HttpServlet {
             throws ServletException, IOException {
         try {
             String type = request.getParameter("type");
-            int id = Integer.parseInt(request.getParameter("id"));
+            Integer id = ParamUtil.getInt(request, "id");
+            if (id == null) {
+                response.sendError(HttpServletResponse.SC_NOT_FOUND);
+                return;
+            }
             FileItem item = "template".equals(type) ? templateDao.findById(id) : resourceDao.findById(id);
             if (item == null) {
                 response.sendError(HttpServletResponse.SC_NOT_FOUND);

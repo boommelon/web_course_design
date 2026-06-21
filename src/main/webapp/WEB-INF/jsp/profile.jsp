@@ -22,7 +22,7 @@
                 <div class="card-header">基本信息</div>
                 <div class="card-body">
                     <form action="${pageContext.request.contextPath}/profile.action" method="post">
-                        <input type="hidden" name="action" value="profile">
+                        <input type="hidden" name="opttype" value="profile">
                         <div class="mb-3">
                             <label class="form-label">用户名</label>
                             <input type="text" class="form-control" value="${sessionScope.loginUser.username}" disabled>
@@ -50,7 +50,7 @@
                 <div class="card-header">修改密码</div>
                 <div class="card-body">
                     <form action="${pageContext.request.contextPath}/profile.action" method="post">
-                        <input type="hidden" name="action" value="password">
+                        <input type="hidden" name="opttype" value="password">
                         <div class="mb-3">
                             <label class="form-label">原密码</label>
                             <input type="password" name="oldPassword" class="form-control" required>

@@ -1,4 +1,5 @@
 target/
+example/
 *.class
 *.war
 
@@ -24,3 +25,9 @@ uploads/
 
 .DS_Store
 Thumbs.db
+
+# 工具缓存与临时产物
+.playwright-mcp/
+docs/_extracted/
+academic-dashboard*.png
+docs/_*.txt

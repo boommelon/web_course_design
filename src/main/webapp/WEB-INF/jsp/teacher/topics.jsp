@@ -51,7 +51,7 @@
                     </td>
                     <td>${topic.reviewComment}</td>
                     <td>
-                        <a href="${pageContext.request.contextPath}/teacher/topics.action?action=delete&id=${topic.id}"
+                        <a href="${pageContext.request.contextPath}/teacher/topics.action?opttype=delete&id=${topic.id}"
                            class="btn btn-danger btn-sm"
                            onclick="return confirm('确定删除该课题？')">删除</a>
                     </td>
@@ -69,7 +69,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <form action="${pageContext.request.contextPath}/teacher/topics.action" method="post">
-                    <input type="hidden" name="action" value="add">
+                    <input type="hidden" name="opttype" value="add">
                     <div class="modal-body">
                         <div class="mb-3">
                             <label class="form-label">课题名称</label>

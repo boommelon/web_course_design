@@ -4,138 +4,105 @@
 <%@ include file="/WEB-INF/includes/header.jsp" %>
 <%@ include file="/WEB-INF/includes/sidebar.jsp" %>
 
-<!-- 主内容区域 -->
 <div class="main-content">
     <div class="page-header">
-        <h4>仪表盘</h4>
-        <span>欢迎, ${sessionScope.loginUser.name}</span>
+        <h4>首页</h4>
+        <span>欢迎，${sessionScope.loginUser.name}</span>
     </div>
 
-    <!-- 管理员仪表盘 -->
     <c:if test="${sessionScope.loginUser.role == 'admin'}">
-        <div class="row mb-4">
-            <div class="col-md-3">
-                <div class="card text-center">
-                    <div class="card-body">
-                        <h5 class="card-title">教师人数</h5>
-                        <p class="card-text fs-3 text-primary">${teacherCount}</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card text-center">
-                    <div class="card-body">
-                        <h5 class="card-title">学生人数</h5>
-                        <p class="card-text fs-3 text-success">${studentCount}</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card text-center">
-                    <div class="card-body">
-                        <h5 class="card-title">课题数量</h5>
-                        <p class="card-text fs-3 text-info">${topicCount}</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card text-center">
-                    <div class="card-body">
-                        <h5 class="card-title">已选题学生</h5>
-                        <p class="card-text fs-3 text-warning">${selectedCount}</p>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <h5>系统统计</h5>
+        <table class="table table-bordered">
+            <thead class="table-light">
+                <tr>
+                    <th>教师人数</th>
+                    <th>学生人数</th>
+                    <th>课题数量</th>
+                    <th>已选题学生</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>${teacherCount}</td>
+                    <td>${studentCount}</td>
+                    <td>${topicCount}</td>
+                    <td>${selectedCount}</td>
+                </tr>
+            </tbody>
+        </table>
     </c:if>
 
-    <!-- 教师仪表盘 -->
     <c:if test="${sessionScope.loginUser.role == 'teacher'}">
-        <div class="row mb-4">
-            <div class="col-md-4">
-                <div class="card text-center">
-                    <div class="card-body">
-                        <h5 class="card-title">我的课题</h5>
-                        <p class="card-text fs-3 text-primary">${topicCount}</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card text-center">
-                    <div class="card-body">
-                        <h5 class="card-title">待审批选题</h5>
-                        <p class="card-text fs-3 text-warning">${pendingSelections}</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card text-center">
-                    <div class="card-body">
-                        <h5 class="card-title">待审核文档</h5>
-                        <p class="card-text fs-3 text-danger">${pendingDocuments}</p>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <h5>我的工作</h5>
+        <table class="table table-bordered">
+            <thead class="table-light">
+                <tr>
+                    <th>我的课题</th>
+                    <th>待审批选题</th>
+                    <th>待审核文档</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>${topicCount}</td>
+                    <td>${pendingSelections}</td>
+                    <td>${pendingDocuments}</td>
+                </tr>
+            </tbody>
+        </table>
     </c:if>
 
-    <!-- 学生仪表盘 -->
     <c:if test="${sessionScope.loginUser.role == 'student'}">
-        <div class="row mb-4">
-            <div class="col-md-4">
-                <div class="card text-center">
-                    <div class="card-body">
-                        <h5 class="card-title">我的选题</h5>
+        <h5>我的信息</h5>
+        <table class="table table-bordered">
+            <thead class="table-light">
+                <tr>
+                    <th>我的选题</th>
+                    <th>已提交文档</th>
+                    <th>系统公告</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
                         <c:choose>
-                            <c:when test="${mySelection != null}">
-                                <p class="card-text text-success">${mySelection.topicTitle}</p>
-                            </c:when>
-                            <c:otherwise>
-                                <p class="card-text text-muted">暂未选题</p>
-                            </c:otherwise>
+                            <c:when test="${mySelection != null}">${mySelection.topicTitle}</c:when>
+                            <c:otherwise>暂未选题</c:otherwise>
                         </c:choose>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card text-center">
-                    <div class="card-body">
-                        <h5 class="card-title">已提交文档</h5>
-                        <p class="card-text fs-3 text-info">${docCount}</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card text-center">
-                    <div class="card-body">
-                        <h5 class="card-title">系统公告</h5>
-                        <p class="card-text fs-3 text-secondary">${announcementCount}</p>
-                    </div>
-                </div>
-            </div>
-        </div>
+                    </td>
+                    <td>${docCount}</td>
+                    <td>${announcementCount}</td>
+                </tr>
+            </tbody>
+        </table>
     </c:if>
 
-    <!-- 公告列表 -->
-    <div class="card">
-        <div class="card-header">系统公告</div>
-        <div class="card-body">
+    <h5>系统公告</h5>
+    <table class="table table-bordered table-hover">
+        <thead class="table-light">
+            <tr>
+                <th width="25%">标题</th>
+                <th>内容</th>
+                <th width="18%">发布时间</th>
+            </tr>
+        </thead>
+        <tbody>
             <c:forEach var="ann" items="${announcements}">
-                <div class="mb-3 pb-2 border-bottom">
-                    <strong>
-                        <c:if test="${ann.isTop == 1}">
-                            <span class="badge bg-danger">置顶</span>
-                        </c:if>
+                <tr>
+                    <td>
+                        <c:if test="${ann.isTop == 1}">[置顶]</c:if>
                         ${ann.title}
-                    </strong>
-                    <small class="text-muted float-end">${ann.createdAt}</small>
-                    <p class="mb-0 mt-1 text-muted">${ann.content}</p>
-                </div>
+                    </td>
+                    <td>${ann.content}</td>
+                    <td>${ann.createdAt}</td>
+                </tr>
             </c:forEach>
             <c:if test="${empty announcements}">
-                <p class="text-muted">暂无公告</p>
+                <tr>
+                    <td colspan="3">暂无公告</td>
+                </tr>
             </c:if>
-        </div>
-    </div>
+        </tbody>
+    </table>
 
 <%@ include file="/WEB-INF/includes/footer.jsp" %>

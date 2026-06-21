@@ -120,6 +120,13 @@ public class TopicDao {
                 topic.getMaxStudents(), topic.getStatus(), topic.getId());
     }
 
+    /** 教师修改自己发布的课题 */
+    public int update(Topic topic, int teacherId) throws SQLException {
+        String sql = "UPDATE topics SET title=?, description=?, max_students=?, status=? WHERE id=? AND teacher_id=?";
+        return SQLHelper.executeUpdate(sql, topic.getTitle(), topic.getDescription(),
+                topic.getMaxStudents(), topic.getStatus(), topic.getId(), teacherId);
+    }
+
     /** 管理员审核课题 */
     public void updateReview(int id, String reviewStatus, String reviewComment) throws SQLException {
         String status = "approved".equals(reviewStatus) ? "open" : "closed";
@@ -127,9 +134,9 @@ public class TopicDao {
         SQLHelper.executeUpdate(sql, reviewStatus, reviewComment, status, id);
     }
 
-    /** 删除课题 */
-    public void delete(int id) throws SQLException {
-        SQLHelper.executeUpdate("DELETE FROM topics WHERE id=?", id);
+    /** 教师删除自己发布的课题 */
+    public int delete(int id, int teacherId) throws SQLException {
+        return SQLHelper.executeUpdate("DELETE FROM topics WHERE id=? AND teacher_id=?", id, teacherId);
     }
 
     /** 课题已选人数+1 */

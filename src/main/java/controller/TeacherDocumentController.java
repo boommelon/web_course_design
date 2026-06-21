@@ -2,6 +2,7 @@ package controller;
 
 import bean.User;
 import dao.DocumentDao;
+import util.ParamUtil;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -33,12 +34,20 @@ public class TeacherDocumentController extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         User user = (User) request.getSession().getAttribute("loginUser");
-        int id = Integer.parseInt(request.getParameter("id"));
-        int score = Integer.parseInt(request.getParameter("score"));
+        Integer id = ParamUtil.getInt(request, "id");
+        Integer score = ParamUtil.getInt(request, "score");
+        if (id == null || score == null) {
+            response.sendRedirect(request.getContextPath() + "/teacher/documents.action");
+            return;
+        }
         String feedback = request.getParameter("feedback");
         String status = request.getParameter("status");
         try {
-            documentDao.updateReview(id, user.getId(), score, feedback, status);
+            int rows = documentDao.updateReview(id, user.getId(), user.getId(), score, feedback, status);
+            if (rows == 0) {
+                response.sendRedirect(request.getContextPath() + "/teacher/documents.action");
+                return;
+            }
         } catch (Exception e) {
             e.printStackTrace();
             throw new ServletException(e);

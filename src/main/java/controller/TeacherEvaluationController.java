@@ -1,8 +1,10 @@
 package controller;
 
+import bean.TopicSelection;
 import bean.User;
 import dao.EvaluationDao;
 import dao.TopicSelectionDao;
+import util.ParamUtil;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -32,14 +34,25 @@ public class TeacherEvaluationController extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         User user = (User) request.getSession().getAttribute("loginUser");
+        Integer studentId = ParamUtil.getInt(request, "studentId");
+        Integer score = ParamUtil.getInt(request, "score");
+        if (studentId == null || score == null) {
+            response.sendRedirect(request.getContextPath() + "/teacher/evaluations.action");
+            return;
+        }
         try {
+            TopicSelection selection = selectionDao.findApprovedByStudent(studentId);
+            if (selection == null || !selectionDao.isStudentOfTeacher(studentId, user.getId())) {
+                response.sendRedirect(request.getContextPath() + "/teacher/evaluations.action");
+                return;
+            }
             evaluationDao.save(
-                    Integer.parseInt(request.getParameter("studentId")),
-                    Integer.parseInt(request.getParameter("topicId")),
+                    studentId,
+                    selection.getTopicId(),
                     user.getId(),
                     request.getParameter("selfComment"),
                     request.getParameter("peerComment"),
-                    Integer.parseInt(request.getParameter("score"))
+                    score
             );
         } catch (Exception e) {
             e.printStackTrace();

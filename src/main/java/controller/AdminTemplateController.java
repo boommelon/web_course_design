@@ -2,6 +2,7 @@ package controller;
 
 import bean.FileItem;
 import dao.FileTemplateDao;
+import util.ParamUtil;
 import util.UploadUtil;
 
 import javax.servlet.ServletException;
@@ -19,8 +20,11 @@ public class AdminTemplateController extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         try {
-            if ("delete".equals(request.getParameter("action"))) {
-                templateDao.delete(Integer.parseInt(request.getParameter("id")));
+            if ("delete".equals(request.getParameter("opttype"))) {
+                Integer id = ParamUtil.getInt(request, "id");
+                if (id != null) {
+                    templateDao.delete(id);
+                }
                 response.sendRedirect(request.getContextPath() + "/admin/templates.action");
                 return;
             }

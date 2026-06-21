@@ -6,21 +6,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>毕业设计管理系统 - 登录</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="${pageContext.request.contextPath}/static/css/academic.css" rel="stylesheet">
+    <link href="${pageContext.request.contextPath}/static/css/academic.css?v=20260621c" rel="stylesheet">
     <style>
         body {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
+            padding-top: 80px;
         }
         .login-box {
-            width: 400px;
-            padding: 30px;
+            width: 360px;
+            padding: 22px;
+            margin: 0 auto;
         }
         .login-box h3 {
             text-align: center;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
         }
     </style>
 </head>
@@ -44,7 +42,9 @@
                 <label class="form-label">密码</label>
                 <input type="password" name="password" class="form-control" placeholder="请输入密码" required>
             </div>
-            <button type="submit" class="btn btn-primary w-100">登 录</button>
+            <div style="text-align:center;">
+                <button type="submit" class="btn btn-primary">登 录</button>
+            </div>
         </form>
     </div>
 </body>

@@ -88,9 +88,11 @@ public class DocumentDao {
     /**
      * 教师审核文档（填写评分和反馈）
      */
-    public void updateReview(int id, int reviewerId, int score, String feedback, String status) throws SQLException {
-        String sql = "UPDATE documents SET reviewer_id=?, score=?, feedback=?, status=? WHERE id=?";
-        SQLHelper.executeUpdate(sql, reviewerId, score, feedback, status, id);
+    public int updateReview(int id, int reviewerId, int teacherId, int score, String feedback, String status) throws SQLException {
+        String sql = "UPDATE documents d JOIN topics t ON d.topic_id=t.id "
+                + "SET d.reviewer_id=?, d.score=?, d.feedback=?, d.status=? "
+                + "WHERE d.id=? AND t.teacher_id=?";
+        return SQLHelper.executeUpdate(sql, reviewerId, score, feedback, status, id, teacherId);
     }
 
     /**

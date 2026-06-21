@@ -109,6 +109,46 @@ public class TopicSelectionDao {
     }
 
     /**
+     * 教师更新自己课题下的选题申请状态（approved/rejected）
+     */
+    public int updateStatus(int id, String status, int teacherId) throws SQLException {
+        String sql = "UPDATE topic_selections ts JOIN topics t ON ts.topic_id=t.id "
+                + "SET ts.status=? WHERE ts.id=? AND t.teacher_id=?";
+        return SQLHelper.executeUpdate(sql, status, id, teacherId);
+    }
+
+    /**
+     * 根据ID查询选题申请
+     */
+    public TopicSelection findById(int id) throws SQLException {
+        String sql = baseSql + "WHERE ts.id = ?";
+        ResultSet rs = SQLHelper.executeQuery(sql, id);
+        try {
+            if (rs.next()) {
+                return rowToSelection(rs);
+            }
+            return null;
+        } finally {
+            SQLHelper.close(rs);
+        }
+    }
+
+    /**
+     * 判断学生是否为指定教师指导
+     */
+    public boolean isStudentOfTeacher(int studentId, int teacherId) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM topic_selections ts JOIN topics t ON ts.topic_id=t.id "
+                + "WHERE ts.student_id=? AND t.teacher_id=? AND ts.status='approved'";
+        ResultSet rs = SQLHelper.executeQuery(sql, studentId, teacherId);
+        try {
+            rs.next();
+            return rs.getInt(1) > 0;
+        } finally {
+            SQLHelper.close(rs);
+        }
+    }
+
+    /**
      * 判断学生是否已有有效申请（pending或approved状态）
      */
     public boolean hasActiveSelection(int studentId) throws SQLException {

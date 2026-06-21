@@ -60,7 +60,7 @@
                                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                             </div>
                             <form action="${pageContext.request.contextPath}/admin/users.action" method="post">
-                                <input type="hidden" name="action" value="edit">
+                                <input type="hidden" name="opttype" value="edit">
                                 <input type="hidden" name="id" value="${user.id}">
                                 <div class="modal-body">
                                     <div class="mb-3">
@@ -109,7 +109,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <form action="${pageContext.request.contextPath}/admin/users.action" method="post">
-                    <input type="hidden" name="action" value="add">
+                    <input type="hidden" name="opttype" value="add">
                     <div class="modal-body">
                         <div class="mb-3">
                             <label class="form-label">用户名</label>

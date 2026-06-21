@@ -7,14 +7,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>毕业设计管理系统</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="${pageContext.request.contextPath}/static/css/academic.css" rel="stylesheet">
+    <link href="${pageContext.request.contextPath}/static/css/academic.css?v=20260621c" rel="stylesheet">
     <script>var contextPath='${pageContext.request.contextPath}';</script>
     <style>
         body { margin: 0; display: flex; min-height: 100vh; }
         .sidebar {
-            width: 220px;
+            width: 210px;
             min-height: 100vh;
-            padding-top: 15px;
+            padding-top: 10px;
             position: fixed;
             left: 0;
             top: 0;
@@ -27,7 +27,7 @@
         }
         .sidebar a {
             display: block;
-            padding: 10px 20px;
+            padding: 7px 20px;
             text-decoration: none;
             font-size: 14px;
         }
@@ -36,8 +36,8 @@
             padding-top: 10px;
         }
         .main-content {
-            margin-left: 220px;
-            padding: 20px 30px;
+            margin-left: 210px;
+            padding: 18px 24px;
             flex: 1;
         }
         .page-header {

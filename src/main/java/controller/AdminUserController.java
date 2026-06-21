@@ -2,6 +2,7 @@ package controller;
 
 import bean.User;
 import dao.UserDao;
+import util.ParamUtil;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -20,14 +21,16 @@ public class AdminUserController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String action = request.getParameter("action");
+        String opttype = request.getParameter("opttype");
 
         try {
             // 删除操作
-            if ("delete".equals(action)) {
-                int id = Integer.parseInt(request.getParameter("id"));
-                userDao.delete(id);
-                response.sendRedirect(request.getContextPath() + "/admin/users.action");
+            if ("delete".equals(opttype)) {
+                Integer id = ParamUtil.getInt(request, "id");
+                if (id != null) {
+                    userDao.delete(id);
+                }
+                response.sendRedirect(request.getContextPath() + "/admin/users.opttype");
                 return;
             }
 
@@ -50,10 +53,10 @@ public class AdminUserController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String action = request.getParameter("action");
+        String opttype = request.getParameter("opttype");
 
         try {
-            if ("add".equals(action)) {
+            if ("add".equals(opttype)) {
                 // 新增用户
                 User user = new User();
                 user.setUsername(request.getParameter("username"));
@@ -63,10 +66,15 @@ public class AdminUserController extends HttpServlet {
                 user.setEmail(request.getParameter("email"));
                 user.setPhone(request.getParameter("phone"));
                 userDao.insert(user);
-            } else if ("edit".equals(action)) {
+            } else if ("edit".equals(opttype)) {
+                Integer id = ParamUtil.getInt(request, "id");
+                if (id == null) {
+                    response.sendRedirect(request.getContextPath() + "/admin/users.opttype");
+                    return;
+                }
                 // 修改用户
                 User user = new User();
-                user.setId(Integer.parseInt(request.getParameter("id")));
+                user.setId(id);
                 user.setName(request.getParameter("name"));
                 user.setRole(request.getParameter("role"));
                 user.setEmail(request.getParameter("email"));
@@ -78,6 +86,6 @@ public class AdminUserController extends HttpServlet {
             throw new ServletException(e);
         }
 
-        response.sendRedirect(request.getContextPath() + "/admin/users.action");
+        response.sendRedirect(request.getContextPath() + "/admin/users.opttype");
     }
 }

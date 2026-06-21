@@ -39,13 +39,13 @@
                             <form action="${pageContext.request.contextPath}/teacher/selections.action" method="post" style="display:inline;">
                                 <input type="hidden" name="id" value="${sel.id}">
                                 <input type="hidden" name="topicId" value="${sel.topicId}">
-                                <input type="hidden" name="action" value="approve">
+                                <input type="hidden" name="opttype" value="approve">
                                 <button type="submit" class="btn btn-success btn-sm">批准</button>
                             </form>
                             <form action="${pageContext.request.contextPath}/teacher/selections.action" method="post" style="display:inline;">
                                 <input type="hidden" name="id" value="${sel.id}">
                                 <input type="hidden" name="topicId" value="${sel.topicId}">
-                                <input type="hidden" name="action" value="reject">
+                                <input type="hidden" name="opttype" value="reject">
                                 <button type="submit" class="btn btn-danger btn-sm">驳回</button>
                             </form>
                         </c:if>

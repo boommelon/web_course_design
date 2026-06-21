@@ -3,6 +3,7 @@ package controller;
 import bean.User;
 import dao.SystemSettingDao;
 import dao.TopicSelectionDao;
+import util.ParamUtil;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -40,7 +41,11 @@ public class StudentSelectionController extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         User user = (User) request.getSession().getAttribute("loginUser");
-        int topicId = Integer.parseInt(request.getParameter("topicId"));
+        Integer topicId = ParamUtil.getInt(request, "topicId");
+        if (topicId == null) {
+            response.sendRedirect(request.getContextPath() + "/student/selections.action");
+            return;
+        }
         String reason = request.getParameter("reason");
         try {
             if (!settingDao.isOpen("student_selection_open")) {
@@ -49,7 +54,7 @@ public class StudentSelectionController extends HttpServlet {
             }
             // 检查是否已有有效申请
             if (!selectionDao.hasActiveSelection(user.getId())) {
-                int roundNo = Integer.parseInt(settingDao.getValue("selection_round"));
+                int roundNo = parseInt(settingDao.getValue("selection_round"), 1);
                 selectionDao.insert(user.getId(), topicId, reason, roundNo, "pending");
             }
         } catch (Exception e) {
@@ -57,5 +62,16 @@ public class StudentSelectionController extends HttpServlet {
             throw new ServletException(e);
         }
         response.sendRedirect(request.getContextPath() + "/student/selections.action");
+    }
+
+    private int parseInt(String value, int def) {
+        if (value == null) {
+            return def;
+        }
+        try {
+            return Integer.parseInt(value.trim());
+        } catch (NumberFormatException e) {
+            return def;
+        }
     }
 }

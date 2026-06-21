@@ -55,13 +55,21 @@ public class SQLHelper {
      * 注意：调用方需要手动关闭ResultSet
      */
     public static ResultSet executeQuery(String sql, Object... params) throws SQLException {
-        Connection conn = getConnection();
-        PreparedStatement ps = conn.prepareStatement(sql);
-        // 设置参数
-        for (int i = 0; i < params.length; i++) {
-            ps.setObject(i + 1, params[i]);
+        Connection conn = null;
+        PreparedStatement ps = null;
+        try {
+            conn = getConnection();
+            ps = conn.prepareStatement(sql);
+            // 设置参数
+            for (int i = 0; i < params.length; i++) {
+                ps.setObject(i + 1, params[i]);
+            }
+            return ps.executeQuery();
+        } catch (SQLException e) {
+            closeQuietly(ps);
+            closeQuietly(conn);
+            throw e;
         }
-        return ps.executeQuery();
     }
 
     /**
@@ -87,16 +95,52 @@ public class SQLHelper {
      * 关闭ResultSet以及对应的Statement和Connection
      */
     public static void close(ResultSet rs) {
+        Statement st = null;
+        Connection conn = null;
         try {
-            if (rs != null) {
-                Statement st = rs.getStatement();
-                Connection conn = st.getConnection();
-                rs.close();
-                st.close();
-                conn.close();
+            if (rs == null) {
+                return;
             }
+            try {
+                st = rs.getStatement();
+            } catch (SQLException e) {
+                // ignore and still try to close the ResultSet
+            }
+            if (st != null) {
+                try {
+                    conn = st.getConnection();
+                } catch (SQLException e) {
+                    // ignore and still try to close the Statement
+                }
+            }
+        } finally {
+            closeQuietly(rs);
+            closeQuietly(st);
+            closeQuietly(conn);
+        }
+    }
+
+    private static void closeQuietly(ResultSet rs) {
+        try {
+            if (rs != null) rs.close();
         } catch (SQLException e) {
-            e.printStackTrace();
+            // ignore close failure
+        }
+    }
+
+    private static void closeQuietly(Statement st) {
+        try {
+            if (st != null) st.close();
+        } catch (SQLException e) {
+            // ignore close failure
+        }
+    }
+
+    private static void closeQuietly(Connection conn) {
+        try {
+            if (conn != null) conn.close();
+        } catch (SQLException e) {
+            // ignore close failure
         }
     }
 }

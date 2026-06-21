@@ -6,7 +6,13 @@ param(
 
     [string]$ContextPath = "graduation-design",
 
-    [int]$Port = 8080
+    [int]$Port = 8080,
+
+    [string]$DbUrl = $env:GD_DB_URL,
+
+    [string]$DbUsername = $env:GD_DB_USERNAME,
+
+    [string]$DbPassword = $env:GD_DB_PASSWORD
 )
 
 $ErrorActionPreference = "Stop"
@@ -74,7 +80,7 @@ Write-Host "Deployed WAR to $targetWarPath"
 if ($tomcatRunning) {
     Write-Host "Tomcat already appears to be running on port $Port."
 } else {
-    & $startScriptPath -TomcatHome $tomcatHomeFull -Port $Port
+    & $startScriptPath -TomcatHome $tomcatHomeFull -Port $Port -DbUrl $DbUrl -DbUsername $DbUsername -DbPassword $DbPassword
 }
 
 Write-Host "Open http://localhost:$Port/$ContextPath/"

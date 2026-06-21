@@ -2,6 +2,7 @@ package controller;
 
 import bean.User;
 import dao.QuestionDao;
+import util.ParamUtil;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -30,7 +31,12 @@ public class TeacherQuestionController extends HttpServlet {
             throws ServletException, IOException {
         User user = (User) request.getSession().getAttribute("loginUser");
         try {
-            questionDao.answer(Integer.parseInt(request.getParameter("id")), user.getId(), request.getParameter("answer"));
+            Integer id = ParamUtil.getInt(request, "id");
+            if (id == null) {
+                response.sendRedirect(request.getContextPath() + "/teacher/questions.action");
+                return;
+            }
+            questionDao.answer(id, user.getId(), request.getParameter("answer"));
         } catch (Exception e) {
             e.printStackTrace();
             throw new ServletException(e);

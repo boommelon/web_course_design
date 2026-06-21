@@ -2,6 +2,7 @@ package controller;
 
 import bean.Topic;
 import dao.TopicDao;
+import util.ParamUtil;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -31,21 +32,30 @@ public class AdminTopicReviewController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        int id = Integer.parseInt(request.getParameter("id"));
-        String action = request.getParameter("action");
+        Integer id = ParamUtil.getInt(request, "id");
+        if (id == null) {
+            response.sendRedirect(request.getContextPath() + "/admin/topics.opttype");
+            return;
+        }
+        String opttype = request.getParameter("opttype");
         String comment = request.getParameter("comment");
 
         try {
-            if ("approve".equals(action)) {
+            if ("approve".equals(opttype)) {
                 topicDao.updateReview(id, "approved", comment);
-            } else if ("reject".equals(action)) {
+            } else if ("reject".equals(opttype)) {
                 topicDao.updateReview(id, "rejected", comment);
-            } else if ("edit".equals(action)) {
+            } else if ("edit".equals(opttype)) {
                 Topic topic = new Topic();
                 topic.setId(id);
                 topic.setTitle(request.getParameter("title"));
                 topic.setDescription(request.getParameter("description"));
-                topic.setMaxStudents(Integer.parseInt(request.getParameter("maxStudents")));
+                Integer maxStudents = ParamUtil.getInt(request, "maxStudents");
+                if (maxStudents == null) {
+                    response.sendRedirect(request.getContextPath() + "/admin/topics.opttype");
+                    return;
+                }
+                topic.setMaxStudents(maxStudents);
                 topic.setStatus(request.getParameter("status"));
                 topicDao.update(topic);
             }
@@ -54,6 +64,6 @@ public class AdminTopicReviewController extends HttpServlet {
             throw new ServletException(e);
         }
 
-        response.sendRedirect(request.getContextPath() + "/admin/topics.action");
+        response.sendRedirect(request.getContextPath() + "/admin/topics.opttype");
     }
 }

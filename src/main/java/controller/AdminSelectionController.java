@@ -5,6 +5,7 @@ import dao.SystemSettingDao;
 import dao.TopicDao;
 import dao.TopicSelectionDao;
 import dao.UserDao;
+import util.ParamUtil;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -36,15 +37,19 @@ public class AdminSelectionController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String action = request.getParameter("action");
+        String opttype = request.getParameter("opttype");
         try {
-            if ("settings".equals(action)) {
+            if ("settings".equals(opttype)) {
                 settingDao.update("student_selection_open", request.getParameter("student_selection_open") != null);
                 settingDao.updateValue("selection_round", request.getParameter("selection_round"));
-            } else if ("forceAssign".equals(action)) {
-                int studentId = Integer.parseInt(request.getParameter("studentId"));
-                int topicId = Integer.parseInt(request.getParameter("topicId"));
-                int roundNo = Integer.parseInt(settingDao.getValue("selection_round"));
+            } else if ("forceAssign".equals(opttype)) {
+                Integer studentId = ParamUtil.getInt(request, "studentId");
+                Integer topicId = ParamUtil.getInt(request, "topicId");
+                if (studentId == null || topicId == null) {
+                    response.sendRedirect(request.getContextPath() + "/admin/selections.opttype");
+                    return;
+                }
+                int roundNo = parseInt(settingDao.getValue("selection_round"), 1);
                 Topic topic = topicDao.findById(topicId);
                 if (topic != null && topic.getSelectedCount() < topic.getMaxStudents()
                         && !selectionDao.hasActiveSelection(studentId)) {
@@ -52,22 +57,42 @@ public class AdminSelectionController extends HttpServlet {
                     topicDao.incrementSelected(topicId);
                     topicDao.closeIfFull(topicId);
                 }
-            } else if ("approve".equals(action)) {
-                int id = Integer.parseInt(request.getParameter("id"));
-                int topicId = Integer.parseInt(request.getParameter("topicId"));
+            } else if ("approve".equals(opttype)) {
+                Integer id = ParamUtil.getInt(request, "id");
+                Integer topicId = ParamUtil.getInt(request, "topicId");
+                if (id == null || topicId == null) {
+                    response.sendRedirect(request.getContextPath() + "/admin/selections.opttype");
+                    return;
+                }
                 Topic topic = topicDao.findById(topicId);
                 if (topic != null && topic.getSelectedCount() < topic.getMaxStudents()) {
                     selectionDao.updateStatus(id, "approved");
                     topicDao.incrementSelected(topicId);
                     topicDao.closeIfFull(topicId);
                 }
-            } else if ("reject".equals(action)) {
-                selectionDao.updateStatus(Integer.parseInt(request.getParameter("id")), "rejected");
+            } else if ("reject".equals(opttype)) {
+                Integer id = ParamUtil.getInt(request, "id");
+                if (id == null) {
+                    response.sendRedirect(request.getContextPath() + "/admin/selections.opttype");
+                    return;
+                }
+                selectionDao.updateStatus(id, "rejected");
             }
         } catch (Exception e) {
             e.printStackTrace();
             throw new ServletException(e);
         }
-        response.sendRedirect(request.getContextPath() + "/admin/selections.action");
+        response.sendRedirect(request.getContextPath() + "/admin/selections.opttype");
+    }
+
+    private int parseInt(String value, int def) {
+        if (value == null) {
+            return def;
+        }
+        try {
+            return Integer.parseInt(value.trim());
+        } catch (NumberFormatException e) {
+            return def;
+        }
     }
 }

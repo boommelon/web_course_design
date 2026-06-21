@@ -5,6 +5,7 @@ import bean.User;
 import dao.QuestionDao;
 import dao.TopicDao;
 import dao.TopicSelectionDao;
+import util.ParamUtil;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -42,7 +43,11 @@ public class StudentQuestionController extends HttpServlet {
         try {
             TopicSelection selection = selectionDao.findApprovedByStudent(user.getId());
             if (selection != null) {
-                int teacherId = Integer.parseInt(request.getParameter("teacherId"));
+                Integer teacherId = ParamUtil.getInt(request, "teacherId");
+                if (teacherId == null) {
+                    response.sendRedirect(request.getContextPath() + "/student/questions.action");
+                    return;
+                }
                 questionDao.insert(user.getId(), teacherId, selection.getTopicId(), request.getParameter("question"));
             }
         } catch (Exception e) {

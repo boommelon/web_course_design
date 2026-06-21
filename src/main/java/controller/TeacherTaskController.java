@@ -3,6 +3,7 @@ package controller;
 import bean.Task;
 import bean.User;
 import dao.TaskDao;
+import util.ParamUtil;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -19,8 +20,11 @@ public class TeacherTaskController extends HttpServlet {
             throws ServletException, IOException {
         User user = (User) request.getSession().getAttribute("loginUser");
         try {
-            if ("delete".equals(request.getParameter("action"))) {
-                taskDao.delete(Integer.parseInt(request.getParameter("id")), user.getId());
+            if ("delete".equals(request.getParameter("opttype"))) {
+                Integer id = ParamUtil.getInt(request, "id");
+                if (id != null) {
+                    taskDao.delete(id, user.getId());
+                }
                 response.sendRedirect(request.getContextPath() + "/teacher/tasks.action");
                 return;
             }

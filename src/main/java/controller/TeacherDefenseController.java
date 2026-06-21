@@ -1,8 +1,10 @@
 package controller;
 
+import bean.TopicSelection;
 import bean.User;
 import dao.DefenseScoreDao;
 import dao.TopicSelectionDao;
+import util.ParamUtil;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -32,12 +34,23 @@ public class TeacherDefenseController extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         User user = (User) request.getSession().getAttribute("loginUser");
+        Integer studentId = ParamUtil.getInt(request, "studentId");
+        Integer score = ParamUtil.getInt(request, "score");
+        if (studentId == null || score == null) {
+            response.sendRedirect(request.getContextPath() + "/teacher/defense.action");
+            return;
+        }
         try {
+            TopicSelection selection = selectionDao.findApprovedByStudent(studentId);
+            if (selection == null || !selectionDao.isStudentOfTeacher(studentId, user.getId())) {
+                response.sendRedirect(request.getContextPath() + "/teacher/defense.action");
+                return;
+            }
             defenseDao.save(
-                    Integer.parseInt(request.getParameter("studentId")),
-                    Integer.parseInt(request.getParameter("topicId")),
+                    studentId,
+                    selection.getTopicId(),
                     user.getId(),
-                    Integer.parseInt(request.getParameter("score")),
+                    score,
                     request.getParameter("comment")
             );
         } catch (Exception e) {

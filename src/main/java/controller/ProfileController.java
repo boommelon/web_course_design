@@ -26,10 +26,10 @@ public class ProfileController extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         User loginUser = (User) request.getSession().getAttribute("loginUser");
-        String action = request.getParameter("action");
+        String opttype = request.getParameter("opttype");
 
         try {
-            if ("profile".equals(action)) {
+            if ("profile".equals(opttype)) {
                 User user = new User();
                 user.setId(loginUser.getId());
                 user.setName(request.getParameter("name"));
@@ -40,7 +40,7 @@ public class ProfileController extends HttpServlet {
                 User refreshed = userDao.findById(loginUser.getId());
                 request.getSession().setAttribute("loginUser", refreshed);
                 request.setAttribute("message", "个人资料已保存");
-            } else if ("password".equals(action)) {
+            } else if ("password".equals(opttype)) {
                 String oldPassword = request.getParameter("oldPassword");
                 String newPassword = request.getParameter("newPassword");
                 String confirmPassword = request.getParameter("confirmPassword");

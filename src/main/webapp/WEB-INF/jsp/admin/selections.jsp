@@ -13,7 +13,7 @@
         <div class="card-header">选题系统控制</div>
         <div class="card-body">
             <form action="${pageContext.request.contextPath}/admin/selections.action" method="post" class="row g-3 align-items-end">
-                <input type="hidden" name="action" value="settings">
+                <input type="hidden" name="opttype" value="settings">
                 <div class="col-md-3">
                     <label class="form-label">当前轮次</label>
                     <select name="selection_round" class="form-select">
@@ -124,7 +124,7 @@
         <div class="card-header">最终分配未选题学生</div>
         <div class="card-body">
             <form action="${pageContext.request.contextPath}/admin/selections.action" method="post" class="row g-3">
-                <input type="hidden" name="action" value="forceAssign">
+                <input type="hidden" name="opttype" value="forceAssign">
                 <div class="col-md-4">
                     <label class="form-label">未确定选题学生</label>
                     <select name="studentId" class="form-select" required>
@@ -180,13 +180,13 @@
                     <td>
                         <c:if test="${sel.status == 'pending'}">
                             <form action="${pageContext.request.contextPath}/admin/selections.action" method="post" style="display:inline;">
-                                <input type="hidden" name="action" value="approve">
+                                <input type="hidden" name="opttype" value="approve">
                                 <input type="hidden" name="id" value="${sel.id}">
                                 <input type="hidden" name="topicId" value="${sel.topicId}">
                                 <button type="submit" class="btn btn-success btn-sm">确认对应</button>
                             </form>
                             <form action="${pageContext.request.contextPath}/admin/selections.action" method="post" style="display:inline;">
-                                <input type="hidden" name="action" value="reject">
+                                <input type="hidden" name="opttype" value="reject">
                                 <input type="hidden" name="id" value="${sel.id}">
                                 <button type="submit" class="btn btn-danger btn-sm">驳回</button>
                             </form>

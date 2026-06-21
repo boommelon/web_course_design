@@ -2,6 +2,7 @@ package controller;
 
 import bean.Announcement;
 import dao.AnnouncementDao;
+import util.ParamUtil;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -19,12 +20,16 @@ public class AdminAnnouncementController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String action = request.getParameter("action");
+        String opttype = request.getParameter("opttype");
         try {
-            if ("delete".equals(action)) {
-                int id = Integer.parseInt(request.getParameter("id"));
+            if ("delete".equals(opttype)) {
+                Integer id = ParamUtil.getInt(request, "id");
+                if (id == null) {
+                    response.sendRedirect(request.getContextPath() + "/admin/announcements.opttype");
+                    return;
+                }
                 announcementDao.delete(id);
-                response.sendRedirect(request.getContextPath() + "/admin/announcements.action");
+                response.sendRedirect(request.getContextPath() + "/admin/announcements.opttype");
                 return;
             }
             request.setAttribute("announcements", announcementDao.findAll());
@@ -38,17 +43,22 @@ public class AdminAnnouncementController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String action = request.getParameter("action");
+        String opttype = request.getParameter("opttype");
         try {
-            if ("add".equals(action)) {
+            if ("add".equals(opttype)) {
                 Announcement a = new Announcement();
                 a.setTitle(request.getParameter("title"));
                 a.setContent(request.getParameter("content"));
                 a.setIsTop(request.getParameter("isTop") != null ? 1 : 0);
                 announcementDao.insert(a);
-            } else if ("edit".equals(action)) {
+            } else if ("edit".equals(opttype)) {
+                Integer id = ParamUtil.getInt(request, "id");
+                if (id == null) {
+                    response.sendRedirect(request.getContextPath() + "/admin/announcements.opttype");
+                    return;
+                }
                 Announcement a = new Announcement();
-                a.setId(Integer.parseInt(request.getParameter("id")));
+                a.setId(id);
                 a.setTitle(request.getParameter("title"));
                 a.setContent(request.getParameter("content"));
                 a.setIsTop(request.getParameter("isTop") != null ? 1 : 0);
@@ -58,6 +68,6 @@ public class AdminAnnouncementController extends HttpServlet {
             e.printStackTrace();
             throw new ServletException(e);
         }
-        response.sendRedirect(request.getContextPath() + "/admin/announcements.action");
+        response.sendRedirect(request.getContextPath() + "/admin/announcements.opttype");
     }
 }

@@ -1,7 +1,13 @@
 param(
     [string]$TomcatHome = $env:CATALINA_HOME,
 
-    [int]$Port = 8080
+    [int]$Port = 8080,
+
+    [string]$DbUrl = $env:GD_DB_URL,
+
+    [string]$DbUsername = $env:GD_DB_USERNAME,
+
+    [string]$DbPassword = $env:GD_DB_PASSWORD
 )
 
 $ErrorActionPreference = "Stop"
@@ -51,6 +57,16 @@ $arguments = @(
     "org.apache.catalina.startup.Bootstrap",
     "start"
 )
+
+if (-not [string]::IsNullOrWhiteSpace($DbUrl)) {
+    $arguments = @("-DGD_DB_URL=$DbUrl") + $arguments
+}
+if (-not [string]::IsNullOrWhiteSpace($DbUsername)) {
+    $arguments = @("-DGD_DB_USERNAME=$DbUsername") + $arguments
+}
+if (-not [string]::IsNullOrWhiteSpace($DbPassword)) {
+    $arguments = @("-DGD_DB_PASSWORD=$DbPassword") + $arguments
+}
 
 Start-Process -FilePath $javawPath -ArgumentList $arguments -WorkingDirectory $tomcatHomeFull -WindowStyle Hidden
 Write-Host "Started Tomcat in background from $tomcatHomeFull"

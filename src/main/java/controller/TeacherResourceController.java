@@ -3,6 +3,7 @@ package controller;
 import bean.FileItem;
 import bean.User;
 import dao.TeacherResourceDao;
+import util.ParamUtil;
 import util.UploadUtil;
 
 import javax.servlet.ServletException;
@@ -21,8 +22,11 @@ public class TeacherResourceController extends HttpServlet {
             throws ServletException, IOException {
         User user = (User) request.getSession().getAttribute("loginUser");
         try {
-            if ("delete".equals(request.getParameter("action"))) {
-                resourceDao.delete(Integer.parseInt(request.getParameter("id")), user.getId());
+            if ("delete".equals(request.getParameter("opttype"))) {
+                Integer id = ParamUtil.getInt(request, "id");
+                if (id != null) {
+                    resourceDao.delete(id, user.getId());
+                }
                 response.sendRedirect(request.getContextPath() + "/teacher/resources.action");
                 return;
             }
