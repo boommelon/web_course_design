@@ -16,17 +16,20 @@ import java.io.IOException;
 public class AdminTopicReviewController extends HttpServlet {
 
     private TopicDao topicDao = new TopicDao();
+    private static final String LIST_PAGE = "/admin/topics.action";
+    private static final String JSP_PAGE = "/WEB-INF/jsp/admin/topics.jsp";
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         try {
-            request.setAttribute("topics", topicDao.findAll());
+            showTopicList(request);
         } catch (Exception e) {
             e.printStackTrace();
             throw new ServletException(e);
         }
-        request.getRequestDispatcher("/WEB-INF/jsp/admin/topics.jsp").forward(request, response);
+
+        request.getRequestDispatcher(JSP_PAGE).forward(request, response);
     }
 
     @Override
@@ -34,36 +37,63 @@ public class AdminTopicReviewController extends HttpServlet {
             throws ServletException, IOException {
         Integer id = ParamUtil.getInt(request, "id");
         if (id == null) {
-            response.sendRedirect(request.getContextPath() + "/admin/topics.opttype");
+            redirectToList(request, response);
             return;
         }
-        String opttype = request.getParameter("opttype");
-        String comment = request.getParameter("comment");
+
+        String action = request.getParameter("opttype");
 
         try {
-            if ("approve".equals(opttype)) {
-                topicDao.updateReview(id, "approved", comment);
-            } else if ("reject".equals(opttype)) {
-                topicDao.updateReview(id, "rejected", comment);
-            } else if ("edit".equals(opttype)) {
-                Topic topic = new Topic();
-                topic.setId(id);
-                topic.setTitle(request.getParameter("title"));
-                topic.setDescription(request.getParameter("description"));
-                Integer maxStudents = ParamUtil.getInt(request, "maxStudents");
-                if (maxStudents == null) {
-                    response.sendRedirect(request.getContextPath() + "/admin/topics.opttype");
-                    return;
-                }
-                topic.setMaxStudents(maxStudents);
-                topic.setStatus(request.getParameter("status"));
-                topicDao.update(topic);
+            if ("approve".equals(action)) {
+                approveTopic(request, id);
+            }
+
+            if ("reject".equals(action)) {
+                rejectTopic(request, id);
+            }
+
+            if ("edit".equals(action)) {
+                editTopic(request, id);
             }
         } catch (Exception e) {
             e.printStackTrace();
             throw new ServletException(e);
         }
 
-        response.sendRedirect(request.getContextPath() + "/admin/topics.opttype");
+        redirectToList(request, response);
+    }
+
+    private void showTopicList(HttpServletRequest request) throws Exception {
+        request.setAttribute("topics", topicDao.findAll());
+    }
+
+    private void approveTopic(HttpServletRequest request, int id) throws Exception {
+        String comment = request.getParameter("comment");
+        topicDao.updateReview(id, "approved", comment);
+    }
+
+    private void rejectTopic(HttpServletRequest request, int id) throws Exception {
+        String comment = request.getParameter("comment");
+        topicDao.updateReview(id, "rejected", comment);
+    }
+
+    private void editTopic(HttpServletRequest request, int id) throws Exception {
+        Integer maxStudents = ParamUtil.getInt(request, "maxStudents");
+        if (maxStudents == null) {
+            return;
+        }
+
+        Topic topic = new Topic();
+        topic.setId(id);
+        topic.setTitle(request.getParameter("title"));
+        topic.setDescription(request.getParameter("description"));
+        topic.setMaxStudents(maxStudents);
+        topic.setStatus(request.getParameter("status"));
+        topicDao.update(topic);
+    }
+
+    private void redirectToList(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
+        response.sendRedirect(request.getContextPath() + LIST_PAGE);
     }
 }

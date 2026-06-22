@@ -17,13 +17,13 @@ import java.io.IOException;
 public class LoginController extends HttpServlet {
 
     private UserDao userDao = new UserDao();
+    private static final String LOGIN_PAGE = "/login.jsp";
+    private static final String DASHBOARD_PAGE = "/dashboard.action";
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        // 退出登录：销毁session
-        request.getSession().invalidate();
-        response.sendRedirect(request.getContextPath() + "/login.jsp");
+        logout(request, response);
     }
 
     @Override
@@ -35,17 +35,31 @@ public class LoginController extends HttpServlet {
         try {
             User user = userDao.validate(username, password);
             if (user != null) {
-                // 登录成功，把用户信息存入session
-                request.getSession().setAttribute("loginUser", user);
-                response.sendRedirect(request.getContextPath() + "/dashboard.action");
+                loginSuccess(request, response, user);
             } else {
-                // 登录失败，返回登录页并提示错误
-                request.setAttribute("error", "用户名或密码错误");
-                request.getRequestDispatcher("/login.jsp").forward(request, response);
+                loginFail(request, response);
             }
         } catch (Exception e) {
             e.printStackTrace();
             throw new ServletException(e);
         }
+    }
+
+    private void logout(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
+        request.getSession().invalidate();
+        response.sendRedirect(request.getContextPath() + LOGIN_PAGE);
+    }
+
+    private void loginSuccess(HttpServletRequest request, HttpServletResponse response, User user)
+            throws IOException {
+        request.getSession().setAttribute("loginUser", user);
+        response.sendRedirect(request.getContextPath() + DASHBOARD_PAGE);
+    }
+
+    private void loginFail(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        request.setAttribute("error", "用户名或密码错误");
+        request.getRequestDispatcher(LOGIN_PAGE).forward(request, response);
     }
 }

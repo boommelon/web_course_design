@@ -18,71 +18,110 @@ public class AdminSelectionController extends HttpServlet {
     private TopicDao topicDao = new TopicDao();
     private UserDao userDao = new UserDao();
     private SystemSettingDao settingDao = new SystemSettingDao();
+    private static final String LIST_PAGE = "/admin/selections.action";
+    private static final String JSP_PAGE = "/WEB-INF/jsp/admin/selections.jsp";
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         try {
-            request.setAttribute("selections", selectionDao.findAll());
-            request.setAttribute("unselectedStudents", userDao.findStudentsWithoutApprovedSelection());
-            request.setAttribute("availableTopics", topicDao.findAvailableApproved());
-            request.setAttribute("settings", settingDao.findAll());
+            showSelectionPage(request);
         } catch (Exception e) {
             e.printStackTrace();
             throw new ServletException(e);
         }
-        request.getRequestDispatcher("/WEB-INF/jsp/admin/selections.jsp").forward(request, response);
+
+        request.getRequestDispatcher(JSP_PAGE).forward(request, response);
     }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String opttype = request.getParameter("opttype");
+        String action = request.getParameter("opttype");
+
         try {
-            if ("settings".equals(opttype)) {
-                settingDao.update("student_selection_open", request.getParameter("student_selection_open") != null);
-                settingDao.updateValue("selection_round", request.getParameter("selection_round"));
-            } else if ("forceAssign".equals(opttype)) {
-                Integer studentId = ParamUtil.getInt(request, "studentId");
-                Integer topicId = ParamUtil.getInt(request, "topicId");
-                if (studentId == null || topicId == null) {
-                    response.sendRedirect(request.getContextPath() + "/admin/selections.opttype");
-                    return;
-                }
-                int roundNo = parseInt(settingDao.getValue("selection_round"), 1);
-                Topic topic = topicDao.findById(topicId);
-                if (topic != null && topic.getSelectedCount() < topic.getMaxStudents()
-                        && !selectionDao.hasActiveSelection(studentId)) {
-                    selectionDao.insert(studentId, topicId, "管理员最终分配", roundNo, "approved");
-                    topicDao.incrementSelected(topicId);
-                    topicDao.closeIfFull(topicId);
-                }
-            } else if ("approve".equals(opttype)) {
-                Integer id = ParamUtil.getInt(request, "id");
-                Integer topicId = ParamUtil.getInt(request, "topicId");
-                if (id == null || topicId == null) {
-                    response.sendRedirect(request.getContextPath() + "/admin/selections.opttype");
-                    return;
-                }
-                Topic topic = topicDao.findById(topicId);
-                if (topic != null && topic.getSelectedCount() < topic.getMaxStudents()) {
-                    selectionDao.updateStatus(id, "approved");
-                    topicDao.incrementSelected(topicId);
-                    topicDao.closeIfFull(topicId);
-                }
-            } else if ("reject".equals(opttype)) {
-                Integer id = ParamUtil.getInt(request, "id");
-                if (id == null) {
-                    response.sendRedirect(request.getContextPath() + "/admin/selections.opttype");
-                    return;
-                }
-                selectionDao.updateStatus(id, "rejected");
+            if ("settings".equals(action)) {
+                saveSettings(request);
+            }
+
+            if ("forceAssign".equals(action)) {
+                forceAssign(request);
+            }
+
+            if ("approve".equals(action)) {
+                approveSelection(request);
+            }
+
+            if ("reject".equals(action)) {
+                rejectSelection(request);
             }
         } catch (Exception e) {
             e.printStackTrace();
             throw new ServletException(e);
         }
-        response.sendRedirect(request.getContextPath() + "/admin/selections.opttype");
+
+        redirectToList(request, response);
+    }
+
+    private void showSelectionPage(HttpServletRequest request) throws Exception {
+        request.setAttribute("selections", selectionDao.findAll());
+        request.setAttribute("unselectedStudents", userDao.findStudentsWithoutApprovedSelection());
+        request.setAttribute("availableTopics", topicDao.findAvailableApproved());
+        request.setAttribute("settings", settingDao.findAll());
+    }
+
+    private void saveSettings(HttpServletRequest request) throws Exception {
+        settingDao.update("student_selection_open", request.getParameter("student_selection_open") != null);
+        settingDao.updateValue("selection_round", request.getParameter("selection_round"));
+    }
+
+    private void forceAssign(HttpServletRequest request) throws Exception {
+        Integer studentId = ParamUtil.getInt(request, "studentId");
+        Integer topicId = ParamUtil.getInt(request, "topicId");
+        if (studentId == null || topicId == null) {
+            return;
+        }
+
+        Topic topic = topicDao.findById(topicId);
+        if (!canSelectTopic(topic) || selectionDao.hasActiveSelection(studentId)) {
+            return;
+        }
+
+        int roundNo = parseInt(settingDao.getValue("selection_round"), 1);
+        selectionDao.insert(studentId, topicId, "管理员最终分配", roundNo, "approved");
+        addSelectedCount(topicId);
+    }
+
+    private void approveSelection(HttpServletRequest request) throws Exception {
+        Integer id = ParamUtil.getInt(request, "id");
+        Integer topicId = ParamUtil.getInt(request, "topicId");
+        if (id == null || topicId == null) {
+            return;
+        }
+
+        Topic topic = topicDao.findById(topicId);
+        if (!canSelectTopic(topic)) {
+            return;
+        }
+
+        selectionDao.updateStatus(id, "approved");
+        addSelectedCount(topicId);
+    }
+
+    private void rejectSelection(HttpServletRequest request) throws Exception {
+        Integer id = ParamUtil.getInt(request, "id");
+        if (id != null) {
+            selectionDao.updateStatus(id, "rejected");
+        }
+    }
+
+    private boolean canSelectTopic(Topic topic) {
+        return topic != null && topic.getSelectedCount() < topic.getMaxStudents();
+    }
+
+    private void addSelectedCount(int topicId) throws Exception {
+        topicDao.incrementSelected(topicId);
+        topicDao.closeIfFull(topicId);
     }
 
     private int parseInt(String value, int def) {
@@ -94,5 +133,10 @@ public class AdminSelectionController extends HttpServlet {
         } catch (NumberFormatException e) {
             return def;
         }
+    }
+
+    private void redirectToList(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
+        response.sendRedirect(request.getContextPath() + LIST_PAGE);
     }
 }

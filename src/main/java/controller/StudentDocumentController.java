@@ -27,20 +27,22 @@ public class StudentDocumentController extends HttpServlet {
     private DocumentDao documentDao = new DocumentDao();
     private TopicSelectionDao selectionDao = new TopicSelectionDao();
     private SystemSettingDao settingDao = new SystemSettingDao();
+    private static final String LIST_PAGE = "/student/documents.action";
+    private static final String JSP_PAGE = "/WEB-INF/jsp/student/documents.jsp";
+    private static final String UPLOAD_FOLDER = "/uploads";
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         User user = (User) request.getSession().getAttribute("loginUser");
         try {
-            request.setAttribute("documents", documentDao.findByStudent(user.getId()));
-            request.setAttribute("selection", selectionDao.findApprovedByStudent(user.getId()));
-            request.setAttribute("documentUploadOpen", settingDao.isOpen("document_upload_open"));
+            showDocumentPage(request, user);
         } catch (Exception e) {
             e.printStackTrace();
             throw new ServletException(e);
         }
-        request.getRequestDispatcher("/WEB-INF/jsp/student/documents.jsp").forward(request, response);
+
+        request.getRequestDispatcher(JSP_PAGE).forward(request, response);
     }
 
     @Override
@@ -48,48 +50,73 @@ public class StudentDocumentController extends HttpServlet {
             throws ServletException, IOException {
         User user = (User) request.getSession().getAttribute("loginUser");
         try {
-            if (!settingDao.isOpen("document_upload_open")) {
-                response.sendRedirect(request.getContextPath() + "/student/documents.action");
-                return;
-            }
-
-            // 必须选题通过才能提交文档
-            TopicSelection selection = selectionDao.findApprovedByStudent(user.getId());
-            if (selection != null) {
-                Part filePart = request.getPart("file");
-                String fileName = getSubmittedFileName(filePart);
-                String filePath = null;
-
-                if (fileName != null && fileName.length() > 0 && filePart.getSize() > 0) {
-                    String uploadDir = getServletContext().getRealPath("/uploads");
-                    if (uploadDir == null) {
-                        uploadDir = System.getProperty("java.io.tmpdir") + File.separator + "graduation-design-uploads";
-                    }
-                    File dir = new File(uploadDir);
-                    if (!dir.exists()) {
-                        dir.mkdirs();
-                    }
-
-                    String safeName = System.currentTimeMillis() + "_" + user.getId() + "_" + sanitizeFileName(fileName);
-                    File target = new File(dir, safeName);
-                    filePart.write(target.getAbsolutePath());
-                    filePath = target.getAbsolutePath();
-                }
-
-                Document doc = new Document();
-                doc.setStudentId(user.getId());
-                doc.setTopicId(selection.getTopicId());
-                doc.setType(request.getParameter("type"));
-                doc.setContent(request.getParameter("content"));
-                doc.setFileName(fileName);
-                doc.setFilePath(filePath);
-                documentDao.insert(doc);
-            }
+            submitDocument(request, user);
         } catch (Exception e) {
             e.printStackTrace();
             throw new ServletException(e);
         }
-        response.sendRedirect(request.getContextPath() + "/student/documents.action");
+
+        redirectToList(request, response);
+    }
+
+    private void showDocumentPage(HttpServletRequest request, User user) throws Exception {
+        request.setAttribute("documents", documentDao.findByStudent(user.getId()));
+        request.setAttribute("selection", selectionDao.findApprovedByStudent(user.getId()));
+        request.setAttribute("documentUploadOpen", settingDao.isOpen("document_upload_open"));
+    }
+
+    private void submitDocument(HttpServletRequest request, User user) throws Exception {
+        if (!settingDao.isOpen("document_upload_open")) {
+            return;
+        }
+
+        TopicSelection selection = selectionDao.findApprovedByStudent(user.getId());
+        if (selection == null) {
+            return;
+        }
+
+        Part filePart = request.getPart("file");
+        String fileName = getSubmittedFileName(filePart);
+        String filePath = saveUploadFile(filePart, fileName, user.getId());
+
+        Document document = buildDocument(request, user, selection, fileName, filePath);
+        documentDao.insert(document);
+    }
+
+    private Document buildDocument(HttpServletRequest request, User user, TopicSelection selection,
+                                   String fileName, String filePath) {
+        Document document = new Document();
+        document.setStudentId(user.getId());
+        document.setTopicId(selection.getTopicId());
+        document.setType(request.getParameter("type"));
+        document.setContent(request.getParameter("content"));
+        document.setFileName(fileName);
+        document.setFilePath(filePath);
+        return document;
+    }
+
+    private String saveUploadFile(Part filePart, String fileName, int userId) throws IOException {
+        if (filePart == null || fileName == null || fileName.length() == 0 || filePart.getSize() == 0) {
+            return null;
+        }
+
+        File dir = new File(getUploadDir());
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
+
+        String safeName = System.currentTimeMillis() + "_" + userId + "_" + sanitizeFileName(fileName);
+        File target = new File(dir, safeName);
+        filePart.write(target.getAbsolutePath());
+        return target.getAbsolutePath();
+    }
+
+    private String getUploadDir() {
+        String uploadDir = getServletContext().getRealPath(UPLOAD_FOLDER);
+        if (uploadDir == null) {
+            uploadDir = System.getProperty("java.io.tmpdir") + File.separator + "graduation-design-uploads";
+        }
+        return uploadDir;
     }
 
     private String getSubmittedFileName(Part part) {
@@ -113,5 +140,10 @@ public class StudentDocumentController extends HttpServlet {
 
     private String sanitizeFileName(String fileName) {
         return fileName.replaceAll("[\\\\/:*?\"<>|]", "_");
+    }
+
+    private void redirectToList(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
+        response.sendRedirect(request.getContextPath() + LIST_PAGE);
     }
 }

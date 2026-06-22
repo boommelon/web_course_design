@@ -1,0 +1,10 @@
+源代码附件测试文件
+
+此文件用于代替源代码压缩包进行上传测试。
+
+示例：
+public class Demo {
+    public static void main(String[] args) {
+        System.out.println("graduation design demo");
+    }
+}

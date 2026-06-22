@@ -48,6 +48,9 @@
                     <td>${user.phone}</td>
                     <td>
                         <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#editUserModal${user.id}">编辑</button>
+                        <a class="btn btn-secondary btn-sm"
+                           href="${pageContext.request.contextPath}/admin/users.action?opttype=resetPassword&id=${user.id}"
+                           onclick="return confirm('确定将该用户密码重置为123456？')">重置密码</a>
                         <button type="button" class="btn btn-danger btn-sm ajax-delete-user" data-id="${user.id}">删除</button>
                     </td>
                 </tr>

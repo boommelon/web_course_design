@@ -20,48 +20,62 @@ public class StudentSelectionController extends HttpServlet {
 
     private TopicSelectionDao selectionDao = new TopicSelectionDao();
     private SystemSettingDao settingDao = new SystemSettingDao();
+    private static final String LIST_PAGE = "/student/selections.action";
+    private static final String JSP_PAGE = "/WEB-INF/jsp/student/selections.jsp";
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         User user = (User) request.getSession().getAttribute("loginUser");
         try {
-            request.setAttribute("selections", selectionDao.findByStudent(user.getId()));
-            request.setAttribute("hasActive", selectionDao.hasActiveSelection(user.getId()));
-            request.setAttribute("studentSelectionOpen", settingDao.isOpen("student_selection_open"));
-            request.setAttribute("selectionRound", settingDao.getValue("selection_round"));
+            showSelectionList(request, user);
         } catch (Exception e) {
             e.printStackTrace();
             throw new ServletException(e);
         }
-        request.getRequestDispatcher("/WEB-INF/jsp/student/selections.jsp").forward(request, response);
+
+        request.getRequestDispatcher(JSP_PAGE).forward(request, response);
     }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         User user = (User) request.getSession().getAttribute("loginUser");
-        Integer topicId = ParamUtil.getInt(request, "topicId");
-        if (topicId == null) {
-            response.sendRedirect(request.getContextPath() + "/student/selections.action");
-            return;
-        }
-        String reason = request.getParameter("reason");
+
         try {
-            if (!settingDao.isOpen("student_selection_open")) {
-                response.sendRedirect(request.getContextPath() + "/student/selections.action");
-                return;
-            }
-            // 检查是否已有有效申请
-            if (!selectionDao.hasActiveSelection(user.getId())) {
-                int roundNo = parseInt(settingDao.getValue("selection_round"), 1);
-                selectionDao.insert(user.getId(), topicId, reason, roundNo, "pending");
-            }
+            applyTopic(request, user);
         } catch (Exception e) {
             e.printStackTrace();
             throw new ServletException(e);
         }
-        response.sendRedirect(request.getContextPath() + "/student/selections.action");
+
+        redirectToList(request, response);
+    }
+
+    private void showSelectionList(HttpServletRequest request, User user) throws Exception {
+        request.setAttribute("selections", selectionDao.findByStudent(user.getId()));
+        request.setAttribute("hasActive", selectionDao.hasActiveSelection(user.getId()));
+        request.setAttribute("studentSelectionOpen", settingDao.isOpen("student_selection_open"));
+        request.setAttribute("selectionRound", settingDao.getValue("selection_round"));
+    }
+
+    private void applyTopic(HttpServletRequest request, User user) throws Exception {
+        Integer topicId = ParamUtil.getInt(request, "topicId");
+        if (topicId == null) {
+            return;
+        }
+
+        if (!settingDao.isOpen("student_selection_open")) {
+            return;
+        }
+
+        if (selectionDao.hasActiveSelection(user.getId())) {
+            return;
+        }
+
+        String reason = request.getParameter("reason");
+        int roundNo = parseInt(settingDao.getValue("selection_round"), 1);
+        selectionDao.insert(user.getId(), topicId, reason, roundNo, "pending");
     }
 
     private int parseInt(String value, int def) {
@@ -73,5 +87,10 @@ public class StudentSelectionController extends HttpServlet {
         } catch (NumberFormatException e) {
             return def;
         }
+    }
+
+    private void redirectToList(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
+        response.sendRedirect(request.getContextPath() + LIST_PAGE);
     }
 }

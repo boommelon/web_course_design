@@ -20,18 +20,21 @@ public class TeacherSelectionController extends HttpServlet {
 
     private TopicSelectionDao selectionDao = new TopicSelectionDao();
     private TopicDao topicDao = new TopicDao();
+    private static final String LIST_PAGE = "/teacher/selections.action";
+    private static final String JSP_PAGE = "/WEB-INF/jsp/teacher/selections.jsp";
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         User user = (User) request.getSession().getAttribute("loginUser");
         try {
-            request.setAttribute("selections", selectionDao.findByTeacher(user.getId()));
+            showSelectionList(request, user);
         } catch (Exception e) {
             e.printStackTrace();
             throw new ServletException(e);
         }
-        request.getRequestDispatcher("/WEB-INF/jsp/teacher/selections.jsp").forward(request, response);
+
+        request.getRequestDispatcher(JSP_PAGE).forward(request, response);
     }
 
     @Override
@@ -40,35 +43,62 @@ public class TeacherSelectionController extends HttpServlet {
         User user = (User) request.getSession().getAttribute("loginUser");
         Integer id = ParamUtil.getInt(request, "id");
         if (id == null) {
-            response.sendRedirect(request.getContextPath() + "/teacher/selections.opttype");
+            redirectToList(request, response);
             return;
         }
-        String opttype = request.getParameter("opttype");
+
+        String action = request.getParameter("opttype");
 
         try {
-            if ("approve".equals(opttype)) {
-                TopicSelection selection = selectionDao.findById(id);
-                if (selection == null) {
-                    response.sendRedirect(request.getContextPath() + "/teacher/selections.opttype");
-                    return;
-                }
-                int realTopicId = selection.getTopicId();
-                Topic topic = topicDao.findById(realTopicId);
-                if (topic != null && topic.getTeacherId() == user.getId()
-                        && topic.getSelectedCount() < topic.getMaxStudents()) {
-                    int rows = selectionDao.updateStatus(id, "approved", user.getId());
-                    if (rows > 0) {
-                        topicDao.incrementSelected(realTopicId);
-                        topicDao.closeIfFull(realTopicId);
-                    }
-                }
-            } else if ("reject".equals(opttype)) {
-                selectionDao.updateStatus(id, "rejected", user.getId());
+            if ("approve".equals(action)) {
+                approveSelection(id, user);
+            }
+
+            if ("reject".equals(action)) {
+                rejectSelection(id, user);
             }
         } catch (Exception e) {
             e.printStackTrace();
             throw new ServletException(e);
         }
-        response.sendRedirect(request.getContextPath() + "/teacher/selections.opttype");
+
+        redirectToList(request, response);
+    }
+
+    private void showSelectionList(HttpServletRequest request, User user) throws Exception {
+        request.setAttribute("selections", selectionDao.findByTeacher(user.getId()));
+    }
+
+    private void approveSelection(int selectionId, User teacher) throws Exception {
+        TopicSelection selection = selectionDao.findById(selectionId);
+        if (selection == null) {
+            return;
+        }
+
+        Topic topic = topicDao.findById(selection.getTopicId());
+        if (!canApprove(topic, teacher)) {
+            return;
+        }
+
+        int rows = selectionDao.updateStatus(selectionId, "approved", teacher.getId());
+        if (rows > 0) {
+            topicDao.incrementSelected(topic.getId());
+            topicDao.closeIfFull(topic.getId());
+        }
+    }
+
+    private boolean canApprove(Topic topic, User teacher) {
+        return topic != null
+                && topic.getTeacherId() == teacher.getId()
+                && topic.getSelectedCount() < topic.getMaxStudents();
+    }
+
+    private void rejectSelection(int selectionId, User teacher) throws Exception {
+        selectionDao.updateStatus(selectionId, "rejected", teacher.getId());
+    }
+
+    private void redirectToList(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
+        response.sendRedirect(request.getContextPath() + LIST_PAGE);
     }
 }
