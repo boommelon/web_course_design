@@ -1,26 +1,28 @@
 package dao;
 
 import bean.User;
-import dbutil.SQLHelper;
+import util.SQLHelper;
 import util.PasswordUtil;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashSet;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
-/**
- * 用户数据访问类
- * 负责users表的增删改查操作
- */
+ 
+
+
+
 public class UserDao {
 
-    /**
-     * 验证用户登录
-     * @param username 用户名
-     * @param password 明文密码（方法内部会做MD5）
-     * @return 验证成功返回User对象，失败返回null
-     */
+     
+
+
+
+
+
     public User validate(String username, String password) throws SQLException {
         String md5Pass = PasswordUtil.md5(password);
         String sql = "SELECT * FROM users WHERE username=? AND password=?";
@@ -35,9 +37,9 @@ public class UserDao {
         }
     }
 
-    /**
-     * 查询所有用户
-     */
+     
+
+
     public List<User> findAll() throws SQLException {
         String sql = "SELECT * FROM users ORDER BY id";
         ResultSet rs = SQLHelper.executeQuery(sql);
@@ -52,9 +54,9 @@ public class UserDao {
         }
     }
 
-    /**
-     * 按角色查询用户
-     */
+     
+
+
     public List<User> findByRole(String role) throws SQLException {
         String sql = "SELECT * FROM users WHERE role=? ORDER BY id";
         ResultSet rs = SQLHelper.executeQuery(sql, role);
@@ -69,9 +71,9 @@ public class UserDao {
         }
     }
 
-    /**
-     * 查询尚未最终选题的学生
-     */
+     
+
+
     public List<User> findStudentsWithoutApprovedSelection() throws SQLException {
         String sql = "SELECT * FROM users u WHERE u.role='student' "
                 + "AND NOT EXISTS (SELECT 1 FROM topic_selections ts WHERE ts.student_id=u.id AND ts.status='approved') "
@@ -88,9 +90,9 @@ public class UserDao {
         }
     }
 
-    /**
-     * 根据ID查询用户
-     */
+     
+
+
     public User findById(int id) throws SQLException {
         String sql = "SELECT * FROM users WHERE id=?";
         ResultSet rs = SQLHelper.executeQuery(sql, id);
@@ -104,9 +106,9 @@ public class UserDao {
         }
     }
 
-    /**
-     * 根据用户名查询用户
-     */
+     
+
+
     public User findByUsername(String username) throws SQLException {
         String sql = "SELECT * FROM users WHERE username=?";
         ResultSet rs = SQLHelper.executeQuery(sql, username);
@@ -120,9 +122,80 @@ public class UserDao {
         }
     }
 
-    /**
-     * 新增用户（密码会自动MD5加密）
-     */
+     
+
+
+    public boolean phoneExists(String phone) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM users WHERE phone=?";
+        ResultSet rs = SQLHelper.executeQuery(sql, phone);
+        try {
+            rs.next();
+            return rs.getInt(1) > 0;
+        } finally {
+            SQLHelper.close(rs);
+        }
+    }
+
+     
+
+
+    public boolean phoneExistsForOtherUser(String phone, int userId) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM users WHERE phone=? AND id<>?";
+        ResultSet rs = SQLHelper.executeQuery(sql, phone, userId);
+        try {
+            rs.next();
+            return rs.getInt(1) > 0;
+        } finally {
+            SQLHelper.close(rs);
+        }
+    }
+
+     
+
+
+    public int fixDuplicatePhones() throws SQLException {
+        List<User> users = findAll();
+        Set<String> usedPhones = new HashSet<String>();
+        int fixedCount = 0;
+
+        for (User user : users) {
+            String phone = user.getPhone();
+            if (phone == null || phone.trim().length() == 0) {
+                continue;
+            }
+
+            phone = phone.trim();
+            if (usedPhones.contains(phone)) {
+                String newPhone = buildUniquePhone(user.getId(), usedPhones);
+                updatePhone(user.getId(), newPhone);
+                usedPhones.add(newPhone);
+                fixedCount++;
+            } else {
+                usedPhones.add(phone);
+            }
+        }
+
+        return fixedCount;
+    }
+
+    private String buildUniquePhone(int userId, Set<String> usedPhones) {
+        String phone = "199" + String.format("%08d", userId);
+        int index = 1;
+        while (usedPhones.contains(phone)) {
+            phone = "199" + String.format("%08d", userId + index);
+            index++;
+        }
+        return phone;
+    }
+
+    private void updatePhone(int id, String phone) throws SQLException {
+        String sql = "UPDATE users SET phone=? WHERE id=?";
+        SQLHelper.executeUpdate(sql, phone, id);
+    }
+
+     
+
+
     public void insert(User user) throws SQLException {
         String sql = "INSERT INTO users(username, password, name, role, email, phone) VALUES(?,?,?,?,?,?)";
         String md5Pass = PasswordUtil.md5(user.getPassword());
@@ -130,9 +203,9 @@ public class UserDao {
                 user.getName(), user.getRole(), user.getEmail(), user.getPhone());
     }
 
-    /**
-     * 导入用户。用户名已存在时更新基础信息，密码随导入文件同步更新。
-     */
+     
+
+
     public void upsertImported(User user) throws SQLException {
         String sql = "INSERT INTO users(username, password, name, role, email, phone) VALUES(?,?,?,?,?,?) "
                 + "ON DUPLICATE KEY UPDATE password=VALUES(password), name=VALUES(name), "
@@ -142,34 +215,34 @@ public class UserDao {
                 user.getName(), user.getRole(), user.getEmail(), user.getPhone());
     }
 
-    /**
-     * 修改用户信息（不修改密码）
-     */
+     
+
+
     public void update(User user) throws SQLException {
         String sql = "UPDATE users SET name=?, role=?, email=?, phone=? WHERE id=?";
         SQLHelper.executeUpdate(sql, user.getName(), user.getRole(),
                 user.getEmail(), user.getPhone(), user.getId());
     }
 
-    /**
-     * 用户修改个人资料（不允许修改角色）
-     */
+     
+
+
     public void updateProfile(User user) throws SQLException {
         String sql = "UPDATE users SET name=?, email=?, phone=? WHERE id=?";
         SQLHelper.executeUpdate(sql, user.getName(), user.getEmail(), user.getPhone(), user.getId());
     }
 
-    /**
-     * 修改密码
-     */
+     
+
+
     public void updatePassword(int id, String newPassword) throws SQLException {
         String sql = "UPDATE users SET password=? WHERE id=?";
         SQLHelper.executeUpdate(sql, PasswordUtil.md5(newPassword), id);
     }
 
-    /**
-     * 验证指定用户的原密码
-     */
+     
+
+
     public boolean checkPassword(int id, String password) throws SQLException {
         String sql = "SELECT COUNT(*) FROM users WHERE id=? AND password=?";
         ResultSet rs = SQLHelper.executeQuery(sql, id, PasswordUtil.md5(password));
@@ -181,17 +254,17 @@ public class UserDao {
         }
     }
 
-    /**
-     * 删除用户
-     */
+     
+
+
     public void delete(int id) throws SQLException {
         String sql = "DELETE FROM users WHERE id=?";
         SQLHelper.executeUpdate(sql, id);
     }
 
-    /**
-     * 统计某个角色的用户数量
-     */
+     
+
+
     public int countByRole(String role) throws SQLException {
         String sql = "SELECT COUNT(*) FROM users WHERE role=?";
         ResultSet rs = SQLHelper.executeQuery(sql, role);
@@ -203,9 +276,9 @@ public class UserDao {
         }
     }
 
-    /**
-     * 将ResultSet的一行数据转换为User对象
-     */
+     
+
+
     private User rowToUser(ResultSet rs) throws SQLException {
         User user = new User();
         user.setId(rs.getInt("id"));

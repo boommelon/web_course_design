@@ -36,6 +36,77 @@
     </div>
 
     <div class="card mb-4">
+        <div class="card-header">第一轮选题对应关系确认</div>
+        <div class="card-body">
+            <p class="text-muted mb-0">
+                第一轮选题面向所有尚未确定题目的学生开放。学生可以一次勾选多个课题并确认本轮选题，
+                系统会按提交顺序确认第一个仍有名额的课题；课题满额后不再出现在学生可选列表中。
+            </p>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header">学生选题情况总览</div>
+        <div class="card-body">
+            <table class="table table-sm table-bordered">
+                <thead class="table-light">
+                    <tr>
+                        <th>学生</th>
+                        <th>用户名</th>
+                        <th>最终课题</th>
+                        <th>选题记录</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <c:forEach var="student" items="${students}">
+                        <c:set var="approvedTitle" value="未确定" />
+                        <c:forEach var="sel" items="${selections}">
+                            <c:if test="${sel.studentId == student.id && sel.status == 'approved'}">
+                                <c:set var="approvedTitle" value="${sel.topicTitle}" />
+                            </c:if>
+                        </c:forEach>
+                        <tr>
+                            <td>${student.name}</td>
+                            <td>${student.username}</td>
+                            <td>
+                                <c:choose>
+                                    <c:when test="${approvedTitle == '未确定'}">
+                                        <span class="badge bg-warning">未确定</span>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <span class="badge bg-success">${approvedTitle}</span>
+                                    </c:otherwise>
+                                </c:choose>
+                            </td>
+                            <td>
+                                <c:set var="hasRecord" value="false" />
+                                <ul class="mb-0 ps-3">
+                                    <c:forEach var="sel" items="${selections}">
+                                        <c:if test="${sel.studentId == student.id}">
+                                            <c:set var="hasRecord" value="true" />
+                                            <li>
+                                                第${sel.roundNo}轮：${sel.topicTitle}
+                                                <c:choose>
+                                                    <c:when test="${sel.status == 'pending'}">（待确认）</c:when>
+                                                    <c:when test="${sel.status == 'approved'}">（已确定）</c:when>
+                                                    <c:when test="${sel.status == 'rejected'}">（未中选）</c:when>
+                                                </c:choose>
+                                            </li>
+                                        </c:if>
+                                    </c:forEach>
+                                </ul>
+                                <c:if test="${!hasRecord}">
+                                    <span class="text-muted">暂无记录</span>
+                                </c:if>
+                            </td>
+                        </tr>
+                    </c:forEach>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="card mb-4">
         <div class="card-header">第二轮选题名单确认</div>
         <div class="card-body">
             <div class="row">
@@ -151,7 +222,7 @@
         </div>
     </div>
 
-    <h5>选题申请与确认结果</h5>
+    <h5>选题记录与人工确认</h5>
     <table class="table table-bordered table-hover">
         <thead class="table-light">
             <tr>
@@ -174,7 +245,7 @@
                         <c:choose>
                             <c:when test="${sel.status == 'pending'}"><span class="badge bg-warning">待确认</span></c:when>
                             <c:when test="${sel.status == 'approved'}"><span class="badge bg-success">已确定</span></c:when>
-                            <c:when test="${sel.status == 'rejected'}"><span class="badge bg-danger">已驳回</span></c:when>
+                            <c:when test="${sel.status == 'rejected'}"><span class="badge bg-danger">未中选</span></c:when>
                         </c:choose>
                     </td>
                     <td>

@@ -1,6 +1,3 @@
--- 毕业设计管理系统数据库初始化脚本
--- 使用示例:
--- mysql --default-character-set=utf8mb4 -uroot -p -e "source E:/Desktop/web_course_design/sql/init.sql;"
 
 DROP DATABASE IF EXISTS graduation_design;
 CREATE DATABASE graduation_design DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
@@ -13,7 +10,7 @@ CREATE TABLE users (
     name VARCHAR(50) NOT NULL COMMENT '真实姓名',
     role ENUM('admin','teacher','student') NOT NULL COMMENT '角色',
     email VARCHAR(100) COMMENT '邮箱',
-    phone VARCHAR(20) COMMENT '电话',
+    phone VARCHAR(20) UNIQUE COMMENT '电话',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -148,9 +145,6 @@ CREATE TABLE announcements (
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
--- 密码说明:
--- admin123 = 0192023a7bbd73250516f069df18b500
--- 123456   = e10adc3949ba59abbe56e057f20f883e
 
 INSERT INTO users (username, password, name, role, email, phone) VALUES
 ('admin', '0192023a7bbd73250516f069df18b500', '系统管理员', 'admin', 'admin@example.com', '13800000000'),
@@ -167,8 +161,7 @@ INSERT INTO topics (title, description, teacher_id, max_students, selected_count
 ('校园二手交易平台', '实现面向校园的二手物品发布、检索和交易管理功能。', 3, 1, 0, 'open', 'pending', '等待管理员审核');
 
 INSERT INTO topic_selections (student_id, topic_id, reason, round_no, status) VALUES
-(4, 1, '对Web系统开发和数据库设计感兴趣。', 1, 'approved'),
-(5, 2, '希望完成数据统计分析方向的毕业设计。', 1, 'pending');
+(4, 1, '对Web系统开发和数据库设计感兴趣。', 1, 'approved');
 
 INSERT INTO documents (student_id, topic_id, reviewer_id, type, file_path, file_name, content, score, feedback, status) VALUES
 (4, 1, 2, 'proposal', NULL, NULL, '开题报告摘要示例。', 86, '选题依据和研究内容基本完整。', 'reviewed'),

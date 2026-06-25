@@ -2,9 +2,9 @@ package util;
 
 import javax.servlet.http.HttpServletRequest;
 
-/**
- * 请求参数解析工具。
- */
+ 
+
+
 public class ParamUtil {
 
     public static Integer getInt(HttpServletRequest req, String name) {

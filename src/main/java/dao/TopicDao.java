@@ -1,22 +1,22 @@
 package dao;
 
 import bean.Topic;
-import dbutil.SQLHelper;
+import util.SQLHelper;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * 课题数据访问类
- * 负责topics表的增删改查操作
- */
+ 
+
+
+
 public class TopicDao {
 
-    /**
-     * 查询某个教师发布的所有课题
-     */
+     
+
+
     public List<Topic> findByTeacher(int teacherId) throws SQLException {
         String sql = "SELECT t.*, u.name AS teacher_name FROM topics t "
                 + "JOIN users u ON t.teacher_id = u.id "
@@ -29,13 +29,14 @@ public class TopicDao {
         }
     }
 
-    /**
-     * 查询所有开放状态的课题（学生浏览用）
-     */
+     
+
+
     public List<Topic> findOpen() throws SQLException {
         String sql = "SELECT t.*, u.name AS teacher_name FROM topics t "
                 + "JOIN users u ON t.teacher_id = u.id "
-                + "WHERE t.status = 'open' AND t.review_status = 'approved' ORDER BY t.id DESC";
+                + "WHERE t.status = 'open' AND t.review_status = 'approved' "
+                + "AND t.selected_count < t.max_students ORDER BY t.id DESC";
         ResultSet rs = SQLHelper.executeQuery(sql);
         try {
             return resultSetToList(rs);
@@ -44,13 +45,13 @@ public class TopicDao {
         }
     }
 
-    /**
-     * 查询已审核且仍有名额的课题
-     */
+     
+
+
     public List<Topic> findAvailableApproved() throws SQLException {
         String sql = "SELECT t.*, u.name AS teacher_name FROM topics t "
                 + "JOIN users u ON t.teacher_id = u.id "
-                + "WHERE t.review_status='approved' AND t.selected_count < t.max_students "
+                + "WHERE t.status='open' AND t.review_status='approved' AND t.selected_count < t.max_students "
                 + "ORDER BY t.id DESC";
         ResultSet rs = SQLHelper.executeQuery(sql);
         try {
@@ -60,9 +61,9 @@ public class TopicDao {
         }
     }
 
-    /**
-     * 查询所有课题
-     */
+     
+
+
     public List<Topic> findAll() throws SQLException {
         String sql = "SELECT t.*, u.name AS teacher_name FROM topics t "
                 + "JOIN users u ON t.teacher_id = u.id ORDER BY t.id DESC";
@@ -74,9 +75,9 @@ public class TopicDao {
         }
     }
 
-    /**
-     * 查询所有待管理员审核的课题
-     */
+     
+
+
     public List<Topic> findPendingReview() throws SQLException {
         String sql = "SELECT t.*, u.name AS teacher_name FROM topics t "
                 + "JOIN users u ON t.teacher_id = u.id "
@@ -89,9 +90,9 @@ public class TopicDao {
         }
     }
 
-    /**
-     * 根据ID查询课题
-     */
+     
+
+
     public Topic findById(int id) throws SQLException {
         String sql = "SELECT t.*, u.name AS teacher_name FROM topics t "
                 + "JOIN users u ON t.teacher_id = u.id WHERE t.id = ?";
@@ -106,50 +107,50 @@ public class TopicDao {
         }
     }
 
-    /** 新增课题 */
+     
     public void insert(Topic topic) throws SQLException {
         String sql = "INSERT INTO topics(title, description, teacher_id, max_students, status, review_status) VALUES(?,?,?,?,?,?)";
         SQLHelper.executeUpdate(sql, topic.getTitle(), topic.getDescription(),
                 topic.getTeacherId(), topic.getMaxStudents(), "closed", "pending");
     }
 
-    /** 修改课题 */
+     
     public void update(Topic topic) throws SQLException {
         String sql = "UPDATE topics SET title=?, description=?, max_students=?, status=? WHERE id=?";
         SQLHelper.executeUpdate(sql, topic.getTitle(), topic.getDescription(),
                 topic.getMaxStudents(), topic.getStatus(), topic.getId());
     }
 
-    /** 教师修改自己发布的课题 */
+     
     public int update(Topic topic, int teacherId) throws SQLException {
         String sql = "UPDATE topics SET title=?, description=?, max_students=?, status=? WHERE id=? AND teacher_id=?";
         return SQLHelper.executeUpdate(sql, topic.getTitle(), topic.getDescription(),
                 topic.getMaxStudents(), topic.getStatus(), topic.getId(), teacherId);
     }
 
-    /** 管理员审核课题 */
+     
     public void updateReview(int id, String reviewStatus, String reviewComment) throws SQLException {
         String status = "approved".equals(reviewStatus) ? "open" : "closed";
         String sql = "UPDATE topics SET review_status=?, review_comment=?, status=? WHERE id=?";
         SQLHelper.executeUpdate(sql, reviewStatus, reviewComment, status, id);
     }
 
-    /** 教师删除自己发布的课题 */
+     
     public int delete(int id, int teacherId) throws SQLException {
         return SQLHelper.executeUpdate("DELETE FROM topics WHERE id=? AND teacher_id=?", id, teacherId);
     }
 
-    /** 课题已选人数+1 */
+     
     public void incrementSelected(int id) throws SQLException {
         SQLHelper.executeUpdate("UPDATE topics SET selected_count = selected_count + 1 WHERE id=?", id);
     }
 
-    /** 如果课题已选满则自动关闭 */
+     
     public void closeIfFull(int id) throws SQLException {
         SQLHelper.executeUpdate("UPDATE topics SET status='closed' WHERE id=? AND selected_count >= max_students", id);
     }
 
-    /** 统计课题总数 */
+     
     public int count() throws SQLException {
         ResultSet rs = SQLHelper.executeQuery("SELECT COUNT(*) FROM topics");
         try {
@@ -160,7 +161,7 @@ public class TopicDao {
         }
     }
 
-    // 将ResultSet转换为List
+    
     private List<Topic> resultSetToList(ResultSet rs) throws SQLException {
         List<Topic> list = new ArrayList<Topic>();
         while (rs.next()) {
@@ -169,7 +170,7 @@ public class TopicDao {
         return list;
     }
 
-    // 将一行数据转换为Topic对象
+    
     private Topic rowToTopic(ResultSet rs) throws SQLException {
         Topic topic = new Topic();
         topic.setId(rs.getInt("id"));

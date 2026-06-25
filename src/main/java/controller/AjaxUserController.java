@@ -11,9 +11,9 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
-/**
- * Ajax用户删除接口
- */
+ 
+
+
 public class AjaxUserController extends HttpServlet {
 
     private UserDao userDao = new UserDao();
@@ -22,21 +22,21 @@ public class AjaxUserController extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         if (!isAdmin(request)) {
-            writeJson(response, HttpServletResponse.SC_FORBIDDEN, "{\"success\":false,\"message\":\"无权限\"}");
+            writeJson(response, HttpServletResponse.SC_FORBIDDEN, "{\"success\":false,\"message\":\"\\u65e0\\u6743\\u9650\"}");
             return;
         }
 
         try {
             Integer id = ParamUtil.getInt(request, "id");
             if (id == null) {
-                writeJson(response, HttpServletResponse.SC_BAD_REQUEST, "{\"success\":false,\"message\":\"参数错误\"}");
+                writeJson(response, HttpServletResponse.SC_BAD_REQUEST, "{\"success\":false,\"message\":\"\\u53c2\\u6570\\u9519\\u8bef\"}");
                 return;
             }
             userDao.delete(id);
             writeJson(response, HttpServletResponse.SC_OK, "{\"success\":true}");
         } catch (Exception e) {
             e.printStackTrace();
-            writeJson(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "{\"success\":false,\"message\":\"删除失败\"}");
+            writeJson(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "{\"success\":false,\"message\":\"\\u5220\\u9664\\u5931\\u8d25\"}");
         }
     }
 

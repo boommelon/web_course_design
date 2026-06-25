@@ -2,19 +2,19 @@ package bean;
 
 import java.util.Date;
 
-/**
- * 选题申请实体类
- * 对应数据库topic_selections表
- */
+ 
+
+
+
 public class TopicSelection {
     private int id;
     private int studentId;
     private int topicId;
-    private String reason;      // 申请理由
-    private int roundNo;        // 选题轮次
-    private String status;      // 状态: pending/approved/rejected
+    private String reason;      
+    private int roundNo;        
+    private String status;      
     private Date createdAt;
-    // 下面是关联查询用的字段
+    
     private String studentName;
     private String topicTitle;
 

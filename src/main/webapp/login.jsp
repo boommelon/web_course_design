@@ -26,7 +26,7 @@
     <div class="login-box">
         <h3>毕业设计管理系统</h3>
 
-        <!-- 显示错误信息 -->
+        
         <% if (request.getAttribute("error") != null) { %>
             <div class="alert alert-danger">
                 <%= request.getAttribute("error") %>
@@ -44,6 +44,9 @@
             </div>
             <div style="text-align:center;">
                 <button type="submit" class="btn btn-primary">登 录</button>
+            </div>
+            <div class="text-center text-muted small mt-3">
+                忘记密码请联系管理员重置，默认重置密码为 123456
             </div>
         </form>
     </div>

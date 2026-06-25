@@ -38,7 +38,7 @@
             <thead class="table-light">
                 <tr>
                     <th>我的课题</th>
-                    <th>待审批选题</th>
+                    <th>待确认选题</th>
                     <th>待审核文档</th>
                 </tr>
             </thead>

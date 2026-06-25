@@ -10,7 +10,7 @@
         <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addModal">发布公告</button>
     </div>
 
-    <!-- 公告列表 -->
+    
     <table class="table table-bordered table-hover">
         <thead class="table-light">
             <tr>
@@ -74,7 +74,7 @@
         </tbody>
     </table>
 
-    <!-- 发布公告弹窗 -->
+    
     <div class="modal fade" id="addModal" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">

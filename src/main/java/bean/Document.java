@@ -2,25 +2,25 @@ package bean;
 
 import java.util.Date;
 
-/**
- * 文档实体类
- * 对应数据库documents表，存储学生提交的开题报告、中期检查、终稿
- */
+ 
+
+
+
 public class Document {
     private int id;
     private int studentId;
     private int topicId;
-    private int teacherId;      // 课题指导教师ID
-    private int reviewerId;     // 审核教师ID
-    private String type;        // 类型: proposal/midterm/final
-    private String filePath;    // 文件路径
-    private String fileName;    // 原始文件名
-    private String content;     // 内容摘要
-    private Integer score;      // 评分
-    private String feedback;    // 教师反馈
-    private String status;      // 状态: submitted/reviewed/rejected
+    private int teacherId;      
+    private int reviewerId;     
+    private String type;        
+    private String filePath;    
+    private String fileName;    
+    private String content;     
+    private Integer score;      
+    private String feedback;    
+    private String status;      
     private Date createdAt;
-    // 关联查询字段
+    
     private String studentName;
     private String topicTitle;
     private String reviewerName;

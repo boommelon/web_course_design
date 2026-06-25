@@ -17,10 +17,10 @@ $(function () {
 
     function initDeleteButtons() {
         bindAjaxDelete(".ajax-delete-user", "/api/user/delete.action",
-                "确定要删除该用户吗？", "tr[data-user-id='{id}']");
+                "\u786e\u5b9a\u8981\u5220\u9664\u8be5\u7528\u6237\u5417\uff1f", "tr[data-user-id='{id}']");
 
         bindAjaxDelete(".ajax-delete-announcement", "/api/announcement/delete.action",
-                "确定删除该公告？", "tr[data-announcement-id='{id}']");
+                "\u786e\u5b9a\u5220\u9664\u8be5\u516c\u544a\uff1f", "tr[data-announcement-id='{id}']");
     }
 
     function showAjaxError(xhr, fallbackMessage) {
@@ -51,12 +51,12 @@ $(function () {
                         removeTableRow(rowSelectorTemplate, id);
                     } else {
                         $button.prop("disabled", false);
-                        alert((res && res.message) || "删除失败");
+                        alert((res && res.message) || "\u5220\u9664\u5931\u8d25");
                     }
                 },
                 error: function (xhr) {
                     $button.prop("disabled", false);
-                    showAjaxError(xhr, "删除失败，请稍后重试");
+                    showAjaxError(xhr, "\u5220\u9664\u5931\u8d25\uff0c\u8bf7\u7a0d\u540e\u91cd\u8bd5");
                 }
             });
         });
@@ -90,14 +90,14 @@ $(function () {
                 data: { username: username },
                 success: function (res) {
                     if (res && res.exists) {
-                        setUsernameInvalid($input, $message, $submit, "用户名已存在，请更换");
+                        setUsernameInvalid($input, $message, $submit, "\u7528\u6237\u540d\u5df2\u5b58\u5728\uff0c\u8bf7\u66f4\u6362");
                     } else {
                         $input.addClass("is-valid");
-                        $message.addClass("text-success").text("用户名可用");
+                        $message.addClass("text-success").text("\u7528\u6237\u540d\u53ef\u7528");
                     }
                 },
                 error: function () {
-                    setUsernameInvalid($input, $message, $submit, "用户名检测失败，请稍后重试");
+                    setUsernameInvalid($input, $message, $submit, "\u7528\u6237\u540d\u68c0\u6d4b\u5931\u8d25\uff0c\u8bf7\u7a0d\u540e\u91cd\u8bd5");
                 }
             });
         });

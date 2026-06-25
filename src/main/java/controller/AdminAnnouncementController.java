@@ -10,9 +10,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-/**
- * 管理员-公告管理控制器
- */
+ 
+
+
 public class AdminAnnouncementController extends HttpServlet {
 
     private AnnouncementDao announcementDao = new AnnouncementDao();

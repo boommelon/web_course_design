@@ -17,7 +17,7 @@
         </c:choose>
     </div>
 
-    <!-- 课题列表 -->
+    
     <table class="table table-bordered table-hover">
         <thead class="table-light">
             <tr>
@@ -53,14 +53,14 @@
                     <td>
                         <a href="${pageContext.request.contextPath}/teacher/topics.action?opttype=delete&id=${topic.id}"
                            class="btn btn-danger btn-sm"
-                           onclick="return confirm('确定删除该课题？')">删除</a>
+                           onclick="return confirm('\u786e\u5b9a\u5220\u9664\u8be5\u8bfe\u9898\uff1f')">删除</a>
                     </td>
                 </tr>
             </c:forEach>
         </tbody>
     </table>
 
-    <!-- 发布课题弹窗 -->
+    
     <div class="modal fade" id="addTopicModal" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">

@@ -28,7 +28,7 @@
                     <td>${task.deadline}</td>
                     <td>${task.createdAt}</td>
                     <td>
-                        <a class="btn btn-danger btn-sm" href="${pageContext.request.contextPath}/teacher/tasks.action?opttype=delete&id=${task.id}" onclick="return confirm('确定删除该任务？')">删除</a>
+                        <a class="btn btn-danger btn-sm" href="${pageContext.request.contextPath}/teacher/tasks.action?opttype=delete&id=${task.id}" onclick="return confirm('\u786e\u5b9a\u5220\u9664\u8be5\u4efb\u52a1\uff1f')">删除</a>
                     </td>
                 </tr>
             </c:forEach>

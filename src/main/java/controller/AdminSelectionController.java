@@ -1,6 +1,5 @@
 package controller;
 
-import bean.Topic;
 import dao.SystemSettingDao;
 import dao.TopicDao;
 import dao.TopicSelectionDao;
@@ -65,6 +64,7 @@ public class AdminSelectionController extends HttpServlet {
 
     private void showSelectionPage(HttpServletRequest request) throws Exception {
         request.setAttribute("selections", selectionDao.findAll());
+        request.setAttribute("students", userDao.findByRole("student"));
         request.setAttribute("unselectedStudents", userDao.findStudentsWithoutApprovedSelection());
         request.setAttribute("availableTopics", topicDao.findAvailableApproved());
         request.setAttribute("settings", settingDao.findAll());
@@ -82,30 +82,17 @@ public class AdminSelectionController extends HttpServlet {
             return;
         }
 
-        Topic topic = topicDao.findById(topicId);
-        if (!canSelectTopic(topic) || selectionDao.hasActiveSelection(studentId)) {
-            return;
-        }
-
         int roundNo = parseInt(settingDao.getValue("selection_round"), 1);
-        selectionDao.insert(studentId, topicId, "管理员最终分配", roundNo, "approved");
-        addSelectedCount(topicId);
+        selectionDao.forceAssign(studentId, topicId, "管理员最终分配", roundNo);
     }
 
     private void approveSelection(HttpServletRequest request) throws Exception {
         Integer id = ParamUtil.getInt(request, "id");
-        Integer topicId = ParamUtil.getInt(request, "topicId");
-        if (id == null || topicId == null) {
+        if (id == null) {
             return;
         }
 
-        Topic topic = topicDao.findById(topicId);
-        if (!canSelectTopic(topic)) {
-            return;
-        }
-
-        selectionDao.updateStatus(id, "approved");
-        addSelectedCount(topicId);
+        selectionDao.approvePendingSelection(id);
     }
 
     private void rejectSelection(HttpServletRequest request) throws Exception {
@@ -113,15 +100,6 @@ public class AdminSelectionController extends HttpServlet {
         if (id != null) {
             selectionDao.updateStatus(id, "rejected");
         }
-    }
-
-    private boolean canSelectTopic(Topic topic) {
-        return topic != null && topic.getSelectedCount() < topic.getMaxStudents();
-    }
-
-    private void addSelectedCount(int topicId) throws Exception {
-        topicDao.incrementSelected(topicId);
-        topicDao.closeIfFull(topicId);
     }
 
     private int parseInt(String value, int def) {

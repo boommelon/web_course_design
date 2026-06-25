@@ -1,7 +1,7 @@
 package dao;
 
 import bean.DefenseScore;
-import dbutil.SQLHelper;
+import util.SQLHelper;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

@@ -9,11 +9,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-/**
- * 登录控制器
- * GET请求: 退出登录
- * POST请求: 验证用户名密码，登录成功跳转到仪表盘
- */
+ 
+
+
+
+
 public class LoginController extends HttpServlet {
 
     private UserDao userDao = new UserDao();

@@ -1,29 +1,29 @@
 package dao;
 
 import bean.Document;
-import dbutil.SQLHelper;
+import util.SQLHelper;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * 文档数据访问类
- * 负责documents表的操作
- */
+ 
+
+
+
 public class DocumentDao {
 
-    // 基础查询SQL
+    
     private String baseSql = "SELECT d.*, t.teacher_id, u1.name AS student_name, t.title AS topic_title, "
             + "u2.name AS reviewer_name FROM documents d "
             + "JOIN users u1 ON d.student_id = u1.id "
             + "JOIN topics t ON d.topic_id = t.id "
             + "LEFT JOIN users u2 ON d.reviewer_id = u2.id ";
 
-    /**
-     * 查询某个学生提交的所有文档
-     */
+     
+
+
     public List<Document> findByStudent(int studentId) throws SQLException {
         String sql = baseSql + "WHERE d.student_id = ? ORDER BY d.id DESC";
         ResultSet rs = SQLHelper.executeQuery(sql, studentId);
@@ -34,9 +34,9 @@ public class DocumentDao {
         }
     }
 
-    /**
-     * 查询某个教师需要审核的文档
-     */
+     
+
+
     public List<Document> findByTeacher(int teacherId) throws SQLException {
         String sql = baseSql + "WHERE t.teacher_id = ? ORDER BY d.id DESC";
         ResultSet rs = SQLHelper.executeQuery(sql, teacherId);
@@ -47,9 +47,9 @@ public class DocumentDao {
         }
     }
 
-    /**
-     * 管理员查看所有阶段文档
-     */
+     
+
+
     public List<Document> findAll() throws SQLException {
         String sql = baseSql + "ORDER BY d.id DESC";
         ResultSet rs = SQLHelper.executeQuery(sql);
@@ -60,9 +60,9 @@ public class DocumentDao {
         }
     }
 
-    /**
-     * 根据ID查询文档
-     */
+     
+
+
     public Document findById(int id) throws SQLException {
         String sql = baseSql + "WHERE d.id = ?";
         ResultSet rs = SQLHelper.executeQuery(sql, id);
@@ -76,18 +76,18 @@ public class DocumentDao {
         }
     }
 
-    /**
-     * 新增文档
-     */
+     
+
+
     public void insert(Document doc) throws SQLException {
         String sql = "INSERT INTO documents(student_id, topic_id, type, file_path, file_name, content) VALUES(?,?,?,?,?,?)";
         SQLHelper.executeUpdate(sql, doc.getStudentId(), doc.getTopicId(),
                 doc.getType(), doc.getFilePath(), doc.getFileName(), doc.getContent());
     }
 
-    /**
-     * 教师审核文档（填写评分和反馈）
-     */
+     
+
+
     public int updateReview(int id, int reviewerId, int teacherId, int score, String feedback, String status) throws SQLException {
         String sql = "UPDATE documents d JOIN topics t ON d.topic_id=t.id "
                 + "SET d.reviewer_id=?, d.score=?, d.feedback=?, d.status=? "
@@ -95,9 +95,9 @@ public class DocumentDao {
         return SQLHelper.executeUpdate(sql, reviewerId, score, feedback, status, id, teacherId);
     }
 
-    /**
-     * 统计某教师待审核文档数量
-     */
+     
+
+
     public int countPendingByTeacher(int teacherId) throws SQLException {
         String sql = "SELECT COUNT(*) FROM documents d JOIN topics t ON d.topic_id = t.id "
                 + "WHERE t.teacher_id = ? AND d.status = 'submitted'";
@@ -149,7 +149,7 @@ public class DocumentDao {
         doc.setFilePath(rs.getString("file_path"));
         doc.setFileName(rs.getString("file_name"));
         doc.setContent(rs.getString("content"));
-        // score可能为null
+        
         int score = rs.getInt("score");
         if (!rs.wasNull()) {
             doc.setScore(score);

@@ -2,21 +2,21 @@ package bean;
 
 import java.util.Date;
 
-/**
- * 课题实体类
- * 对应数据库topics表
- */
+ 
+
+
+
 public class Topic {
     private int id;
-    private String title;       // 课题名称
-    private String description; // 课题描述
-    private int teacherId;      // 指导教师ID
-    private String teacherName; // 教师姓名（关联查询用）
-    private int maxStudents;    // 最大可选人数
-    private int selectedCount;  // 已选人数
-    private String status;      // 状态: open/closed
-    private String reviewStatus; // 审核状态: pending/approved/rejected
-    private String reviewComment; // 审核意见
+    private String title;       
+    private String description; 
+    private int teacherId;      
+    private String teacherName; 
+    private int maxStudents;    
+    private int selectedCount;  
+    private String status;      
+    private String reviewStatus; 
+    private String reviewComment; 
     private Date createdAt;
 
     public int getId() { return id; }

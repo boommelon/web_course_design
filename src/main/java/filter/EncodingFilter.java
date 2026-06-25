@@ -8,10 +8,10 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import java.io.IOException;
 
-/**
- * 编码过滤器
- * 统一设置请求和响应的字符编码为UTF-8，避免中文乱码
- */
+ 
+
+
+
 public class EncodingFilter implements Filter {
 
     @Override

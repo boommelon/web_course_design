@@ -12,9 +12,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-/**
- * 教师-课题管理控制器
- */
+ 
+
+
 public class TeacherTopicController extends HttpServlet {
 
     private TopicDao topicDao = new TopicDao();

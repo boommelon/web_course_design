@@ -10,7 +10,14 @@
         <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addUserModal">新增用户</button>
     </div>
 
-    <!-- 角色筛选 -->
+    <c:if test="${not empty error && empty openModal}">
+        <div class="alert alert-danger">${error}</div>
+    </c:if>
+    <c:if test="${not empty message}">
+        <div class="alert alert-success">${message}</div>
+    </c:if>
+
+    
     <div class="mb-3">
         <a href="${pageContext.request.contextPath}/admin/users.action" class="btn btn-outline-secondary btn-sm">全部</a>
         <a href="${pageContext.request.contextPath}/admin/users.action?role=teacher" class="btn btn-outline-primary btn-sm">教师</a>
@@ -18,7 +25,7 @@
         <a href="${pageContext.request.contextPath}/admin/users.action?role=admin" class="btn btn-outline-danger btn-sm">管理员</a>
     </div>
 
-    <!-- 用户列表表格 -->
+    
     <table class="table table-bordered table-hover">
         <thead class="table-light">
             <tr>
@@ -50,7 +57,7 @@
                         <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#editUserModal${user.id}">编辑</button>
                         <a class="btn btn-secondary btn-sm"
                            href="${pageContext.request.contextPath}/admin/users.action?opttype=resetPassword&id=${user.id}"
-                           onclick="return confirm('确定将该用户密码重置为123456？')">重置密码</a>
+                           onclick="return confirm('\u786e\u5b9a\u5c06\u8be5\u7528\u6237\u5bc6\u7801\u91cd\u7f6e\u4e3a123456\uff1f')">重置密码</a>
                         <button type="button" class="btn btn-danger btn-sm ajax-delete-user" data-id="${user.id}">删除</button>
                     </td>
                 </tr>
@@ -65,7 +72,11 @@
                             <form action="${pageContext.request.contextPath}/admin/users.action" method="post">
                                 <input type="hidden" name="opttype" value="edit">
                                 <input type="hidden" name="id" value="${user.id}">
+                                <input type="hidden" name="roleFilter" value="${roleFilter}">
                                 <div class="modal-body">
+                                    <c:if test="${errorUserId == user.id && not empty error}">
+                                        <div class="alert alert-danger">${error}</div>
+                                    </c:if>
                                     <div class="mb-3">
                                         <label class="form-label">用户名</label>
                                         <input type="text" class="form-control" value="${user.username}" disabled>
@@ -88,7 +99,7 @@
                                     </div>
                                     <div class="mb-3">
                                         <label class="form-label">电话</label>
-                                        <input type="text" name="phone" class="form-control" value="${user.phone}">
+                                        <input type="tel" name="phone" class="form-control" value="${user.phone}" pattern="1[0-9]{10}" maxlength="11">
                                     </div>
                                 </div>
                                 <div class="modal-footer">
@@ -103,7 +114,7 @@
         </tbody>
     </table>
 
-    <!-- 新增用户弹窗 -->
+    
     <div class="modal fade" id="addUserModal" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -113,35 +124,39 @@
                 </div>
                 <form action="${pageContext.request.contextPath}/admin/users.action" method="post">
                     <input type="hidden" name="opttype" value="add">
+                    <input type="hidden" name="roleFilter" value="${roleFilter}">
                     <div class="modal-body">
+                        <c:if test="${openModal == 'addUserModal' && not empty error}">
+                            <div class="alert alert-danger">${error}</div>
+                        </c:if>
                         <div class="mb-3">
                             <label class="form-label">用户名</label>
-                            <input type="text" name="username" class="form-control" id="addUsername" required>
+                            <input type="text" name="username" class="form-control" id="addUsername" value="${formUsername}" required>
                             <div class="form-text username-check-message"></div>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">密码</label>
-                            <input type="password" name="password" class="form-control" required>
+                            <input type="password" name="password" class="form-control" value="${formPassword}" required>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">姓名</label>
-                            <input type="text" name="name" class="form-control" required>
+                            <input type="text" name="name" class="form-control" value="${formName}" required>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">角色</label>
                             <select name="role" class="form-select">
-                                <option value="student">学生</option>
-                                <option value="teacher">教师</option>
-                                <option value="admin">管理员</option>
+                                <option value="student" <c:if test="${formRole == 'student'}">selected</c:if>>学生</option>
+                                <option value="teacher" <c:if test="${formRole == 'teacher'}">selected</c:if>>教师</option>
+                                <option value="admin" <c:if test="${formRole == 'admin'}">selected</c:if>>管理员</option>
                             </select>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">邮箱</label>
-                            <input type="email" name="email" class="form-control">
+                            <input type="email" name="email" class="form-control" value="${formEmail}">
                         </div>
                         <div class="mb-3">
                             <label class="form-label">电话</label>
-                            <input type="text" name="phone" class="form-control">
+                            <input type="tel" name="phone" class="form-control" value="${formPhone}" pattern="1[0-9]{10}" maxlength="11">
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -152,5 +167,16 @@
             </div>
         </div>
     </div>
+
+    <c:if test="${not empty openModal}">
+        <script>
+            window.onload = function () {
+                var button = document.querySelector('[data-bs-target="#${openModal}"]');
+                if (button) {
+                    button.click();
+                }
+            };
+        </script>
+    </c:if>
 
 <%@ include file="/WEB-INF/includes/footer.jsp" %>

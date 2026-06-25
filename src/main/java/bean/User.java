@@ -2,16 +2,16 @@ package bean;
 
 import java.util.Date;
 
-/**
- * 用户实体类
- * 对应数据库users表
- */
+ 
+
+
+
 public class User {
     private int id;
-    private String username;  // 登录用户名
-    private String password;  // 密码（MD5加密）
-    private String name;      // 真实姓名
-    private String role;      // 角色: admin/teacher/student
+    private String username;  
+    private String password;  
+    private String name;      
+    private String role;      
     private String email;
     private String phone;
     private Date createdAt;

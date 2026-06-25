@@ -10,9 +10,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-/**
- * 管理员-课题审核控制器。
- */
+ 
+
+
 public class AdminTopicReviewController extends HttpServlet {
 
     private TopicDao topicDao = new TopicDao();

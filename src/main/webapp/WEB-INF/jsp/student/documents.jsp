@@ -9,7 +9,7 @@
         <h4>文档提交</h4>
     </div>
 
-    <!-- 未选题通过时的提示 -->
+    
     <c:if test="${selection == null}">
         <div class="alert alert-warning">您的选题尚未通过审批，暂时无法提交文档。</div>
     </c:if>
@@ -18,7 +18,7 @@
         <div class="alert alert-warning">当前文档上传系统已关闭，暂时无法提交新文档。</div>
     </c:if>
 
-    <!-- 选题通过后显示提交表单 -->
+    
     <c:if test="${selection != null && documentUploadOpen}">
         <div class="card mb-4">
             <div class="card-header">提交新文档</div>
@@ -48,7 +48,7 @@
         </div>
     </c:if>
 
-    <!-- 已提交文档列表 -->
+    
     <h5>已提交文档</h5>
     <table class="table table-bordered">
         <thead class="table-light">

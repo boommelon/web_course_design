@@ -11,10 +11,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-/**
- * 学生-我的成绩控制器
- * 展示文档审核结果（评分和反馈）
- */
+ 
+
+
+
 public class StudentScoreController extends HttpServlet {
 
     private DocumentDao documentDao = new DocumentDao();

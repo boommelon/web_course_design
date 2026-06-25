@@ -10,12 +10,14 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
-/**
- * 学生-我的选题控制器
- * GET: 查看选题申请列表
- * POST: 提交新的选题申请
- */
+ 
+
+
+
+
 public class StudentSelectionController extends HttpServlet {
 
     private TopicSelectionDao selectionDao = new TopicSelectionDao();
@@ -53,29 +55,65 @@ public class StudentSelectionController extends HttpServlet {
     }
 
     private void showSelectionList(HttpServletRequest request, User user) throws Exception {
+        int roundNo = parseInt(settingDao.getValue("selection_round"), 1);
         request.setAttribute("selections", selectionDao.findByStudent(user.getId()));
-        request.setAttribute("hasActive", selectionDao.hasActiveSelection(user.getId()));
+        request.setAttribute("hasApproved", selectionDao.hasApprovedSelection(user.getId()));
+        request.setAttribute("hasSubmittedCurrentRound", selectionDao.hasSelectionInRound(user.getId(), roundNo));
         request.setAttribute("studentSelectionOpen", settingDao.isOpen("student_selection_open"));
-        request.setAttribute("selectionRound", settingDao.getValue("selection_round"));
+        request.setAttribute("selectionRound", roundNo);
     }
 
     private void applyTopic(HttpServletRequest request, User user) throws Exception {
-        Integer topicId = ParamUtil.getInt(request, "topicId");
-        if (topicId == null) {
-            return;
-        }
-
         if (!settingDao.isOpen("student_selection_open")) {
             return;
         }
 
-        if (selectionDao.hasActiveSelection(user.getId())) {
+        int roundNo = parseInt(settingDao.getValue("selection_round"), 1);
+        if (selectionDao.hasApprovedSelection(user.getId())
+                || selectionDao.hasSelectionInRound(user.getId(), roundNo)) {
+            return;
+        }
+
+        List<Integer> topicIds = getTopicIds(request);
+        if (topicIds.isEmpty()) {
             return;
         }
 
         String reason = request.getParameter("reason");
-        int roundNo = parseInt(settingDao.getValue("selection_round"), 1);
-        selectionDao.insert(user.getId(), topicId, reason, roundNo, "pending");
+        selectionDao.confirmRoundSelections(user.getId(), topicIds, reason, roundNo);
+    }
+
+    private List<Integer> getTopicIds(HttpServletRequest request) {
+        List<Integer> topicIds = new ArrayList<Integer>();
+        String[] values = request.getParameterValues("topicIds");
+        if (values != null) {
+            for (String value : values) {
+                addTopicId(topicIds, value);
+            }
+        }
+
+        if (topicIds.isEmpty()) {
+            Integer topicId = ParamUtil.getInt(request, "topicId");
+            if (topicId != null) {
+                topicIds.add(topicId);
+            }
+        }
+
+        return topicIds;
+    }
+
+    private void addTopicId(List<Integer> topicIds, String value) {
+        if (value == null) {
+            return;
+        }
+        try {
+            int topicId = Integer.parseInt(value.trim());
+            if (topicId > 0) {
+                topicIds.add(topicId);
+            }
+        } catch (NumberFormatException e) {
+            
+        }
     }
 
     private int parseInt(String value, int def) {

@@ -29,9 +29,9 @@
                     <td>${sel.createdAt}</td>
                     <td>
                         <c:choose>
-                            <c:when test="${sel.status == 'pending'}"><span class="badge bg-warning">待审批</span></c:when>
+                            <c:when test="${sel.status == 'pending'}"><span class="badge bg-warning">待确认</span></c:when>
                             <c:when test="${sel.status == 'approved'}"><span class="badge bg-success">已通过</span></c:when>
-                            <c:when test="${sel.status == 'rejected'}"><span class="badge bg-danger">已驳回</span></c:when>
+                            <c:when test="${sel.status == 'rejected'}"><span class="badge bg-danger">未中选</span></c:when>
                         </c:choose>
                     </td>
                     <td>
@@ -40,7 +40,7 @@
                                 <input type="hidden" name="id" value="${sel.id}">
                                 <input type="hidden" name="topicId" value="${sel.topicId}">
                                 <input type="hidden" name="opttype" value="approve">
-                                <button type="submit" class="btn btn-success btn-sm">批准</button>
+                                <button type="submit" class="btn btn-success btn-sm">确认</button>
                             </form>
                             <form action="${pageContext.request.contextPath}/teacher/selections.action" method="post" style="display:inline;">
                                 <input type="hidden" name="id" value="${sel.id}">

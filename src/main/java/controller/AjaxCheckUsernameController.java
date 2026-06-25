@@ -8,9 +8,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-/**
- * Ajax用户名重复检测接口
- */
+ 
+
+
 public class AjaxCheckUsernameController extends HttpServlet {
 
     private UserDao userDao = new UserDao();

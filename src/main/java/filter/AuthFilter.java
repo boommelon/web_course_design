@@ -13,11 +13,11 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
-/**
- * 登录验证与权限控制过滤器
- * 1. 检查用户是否已登录，未登录则跳转到登录页
- * 2. 根据URL前缀判断角色权限，防止越权访问
- */
+ 
+
+
+
+
 public class AuthFilter implements Filter {
 
     @Override
@@ -31,13 +31,13 @@ public class AuthFilter implements Filter {
         HttpServletResponse resp = (HttpServletResponse) response;
         String path = req.getServletPath();
 
-        // 放行不需要登录的资源：登录页面、登录请求、静态资源
+        
         if (path.equals("/login.jsp") || path.equals("/login.action") || path.startsWith("/static/")) {
             chain.doFilter(request, response);
             return;
         }
 
-        // 检查是否已登录
+        
         HttpSession session = req.getSession(false);
         User loginUser = null;
         if (session != null) {
@@ -45,22 +45,22 @@ public class AuthFilter implements Filter {
         }
 
         if (loginUser == null) {
-            // 未登录，重定向到登录页
+            
             resp.sendRedirect(req.getContextPath() + "/login.jsp");
             return;
         }
 
-        // 权限控制：根据URL前缀判断是否有权访问
+        
         String role = loginUser.getRole();
         if (path.startsWith("/admin/") && !"admin".equals(role)) {
-            // 非管理员访问管理员页面，跳转回仪表盘
+            
             resp.sendRedirect(req.getContextPath() + "/dashboard.action");
             return;
         }
         if (path.startsWith("/api/") && !"admin".equals(role)) {
             resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
             resp.setContentType("application/json;charset=UTF-8");
-            resp.getWriter().write("{\"success\":false,\"message\":\"无权限\"}");
+            resp.getWriter().write("{\"success\":false,\"message\":\"\\u65e0\\u6743\\u9650\"}");
             return;
         }
         if (path.startsWith("/teacher/") && !"teacher".equals(role)) {
@@ -72,7 +72,7 @@ public class AuthFilter implements Filter {
             return;
         }
 
-        // 验证通过，放行
+        
         chain.doFilter(request, response);
     }
 

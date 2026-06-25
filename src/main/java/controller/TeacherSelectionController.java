@@ -1,9 +1,6 @@
 package controller;
 
 import bean.User;
-import bean.Topic;
-import bean.TopicSelection;
-import dao.TopicDao;
 import dao.TopicSelectionDao;
 import util.ParamUtil;
 
@@ -13,13 +10,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-/**
- * 教师-选题审批控制器
- */
+ 
+
+
 public class TeacherSelectionController extends HttpServlet {
 
     private TopicSelectionDao selectionDao = new TopicSelectionDao();
-    private TopicDao topicDao = new TopicDao();
     private static final String LIST_PAGE = "/teacher/selections.action";
     private static final String JSP_PAGE = "/WEB-INF/jsp/teacher/selections.jsp";
 
@@ -70,27 +66,7 @@ public class TeacherSelectionController extends HttpServlet {
     }
 
     private void approveSelection(int selectionId, User teacher) throws Exception {
-        TopicSelection selection = selectionDao.findById(selectionId);
-        if (selection == null) {
-            return;
-        }
-
-        Topic topic = topicDao.findById(selection.getTopicId());
-        if (!canApprove(topic, teacher)) {
-            return;
-        }
-
-        int rows = selectionDao.updateStatus(selectionId, "approved", teacher.getId());
-        if (rows > 0) {
-            topicDao.incrementSelected(topic.getId());
-            topicDao.closeIfFull(topic.getId());
-        }
-    }
-
-    private boolean canApprove(Topic topic, User teacher) {
-        return topic != null
-                && topic.getTeacherId() == teacher.getId()
-                && topic.getSelectedCount() < topic.getMaxStudents();
+        selectionDao.approvePendingSelection(selectionId, teacher.getId());
     }
 
     private void rejectSelection(int selectionId, User teacher) throws Exception {

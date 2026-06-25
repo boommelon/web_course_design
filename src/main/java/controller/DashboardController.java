@@ -15,10 +15,10 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
 
-/**
- * 仪表盘控制器
- * 根据当前登录用户的角色，查询不同的统计数据，然后转发到dashboard.jsp
- */
+ 
+
+
+
 public class DashboardController extends HttpServlet {
 
     private UserDao userDao = new UserDao();
@@ -33,11 +33,11 @@ public class DashboardController extends HttpServlet {
         User user = (User) request.getSession().getAttribute("loginUser");
 
         try {
-            // 公告所有角色都能看到
+            
             List<Announcement> announcements = announcementDao.findAll();
             request.setAttribute("announcements", announcements);
 
-            // 根据角色查询不同的统计数据
+            
             String role = user.getRole();
             if ("admin".equals(role)) {
                 request.setAttribute("teacherCount", userDao.countByRole("teacher"));

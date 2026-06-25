@@ -15,9 +15,9 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URLEncoder;
 
-/**
- * 文档附件下载控制器。
- */
+ 
+
+
 public class DocumentDownloadController extends HttpServlet {
 
     private DocumentDao documentDao = new DocumentDao();

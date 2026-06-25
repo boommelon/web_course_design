@@ -10,9 +10,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-/**
- * 教师-文档审核控制器
- */
+ 
+
+
 public class TeacherDocumentController extends HttpServlet {
 
     private DocumentDao documentDao = new DocumentDao();

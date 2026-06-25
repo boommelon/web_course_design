@@ -1,15 +1,15 @@
 package dao;
 
-import dbutil.SQLHelper;
+import util.SQLHelper;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-/**
- * 系统流程开关数据访问类。
- */
+ 
+
+
 public class SystemSettingDao {
 
     public Map<String, String> findAll() throws SQLException {
