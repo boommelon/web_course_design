@@ -17,15 +17,16 @@
         <div class="alert alert-success">${message}</div>
     </c:if>
 
-    
+
     <div class="mb-3">
         <a href="${pageContext.request.contextPath}/admin/users.action" class="btn btn-outline-secondary btn-sm">全部</a>
+        <a href="${pageContext.request.contextPath}/admin/users.action?role=director" class="btn btn-outline-warning btn-sm">专业负责人</a>
         <a href="${pageContext.request.contextPath}/admin/users.action?role=teacher" class="btn btn-outline-primary btn-sm">教师</a>
         <a href="${pageContext.request.contextPath}/admin/users.action?role=student" class="btn btn-outline-success btn-sm">学生</a>
         <a href="${pageContext.request.contextPath}/admin/users.action?role=admin" class="btn btn-outline-danger btn-sm">管理员</a>
     </div>
 
-    
+
     <table class="table table-bordered table-hover">
         <thead class="table-light">
             <tr>
@@ -33,7 +34,8 @@
                 <th>用户名</th>
                 <th>姓名</th>
                 <th>角色</th>
-                <th>邮箱</th>
+                <th>专业</th>
+                <th>学号/班级</th>
                 <th>电话</th>
                 <th>操作</th>
             </tr>
@@ -47,17 +49,22 @@
                     <td>
                         <c:choose>
                             <c:when test="${user.role == 'admin'}"><span class="badge bg-danger">管理员</span></c:when>
+                            <c:when test="${user.role == 'director'}"><span class="badge bg-warning">专业负责人</span></c:when>
                             <c:when test="${user.role == 'teacher'}"><span class="badge bg-primary">教师</span></c:when>
                             <c:when test="${user.role == 'student'}"><span class="badge bg-success">学生</span></c:when>
                         </c:choose>
                     </td>
-                    <td>${user.email}</td>
+                    <td>${user.major}</td>
+                    <td>
+                        <c:if test="${not empty user.studentNo}">${user.studentNo}</c:if>
+                        <c:if test="${not empty user.className}"> / ${user.className}</c:if>
+                    </td>
                     <td>${user.phone}</td>
                     <td>
                         <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#editUserModal${user.id}">编辑</button>
                         <a class="btn btn-secondary btn-sm"
                            href="${pageContext.request.contextPath}/admin/users.action?opttype=resetPassword&id=${user.id}"
-                           onclick="return confirm('\u786e\u5b9a\u5c06\u8be5\u7528\u6237\u5bc6\u7801\u91cd\u7f6e\u4e3a123456\uff1f')">重置密码</a>
+                           onclick="return confirm('确定将该用户密码重置为123456？')">重置密码</a>
                         <button type="button" class="btn btn-danger btn-sm ajax-delete-user" data-id="${user.id}">删除</button>
                     </td>
                 </tr>
@@ -90,8 +97,25 @@
                                         <select name="role" class="form-select">
                                             <option value="student" <c:if test="${user.role == 'student'}">selected</c:if>>学生</option>
                                             <option value="teacher" <c:if test="${user.role == 'teacher'}">selected</c:if>>教师</option>
+                                            <option value="director" <c:if test="${user.role == 'director'}">selected</c:if>>专业负责人</option>
                                             <option value="admin" <c:if test="${user.role == 'admin'}">selected</c:if>>管理员</option>
                                         </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">学院</label>
+                                        <input type="text" name="college" class="form-control" value="${user.college}">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">专业</label>
+                                        <input type="text" name="major" class="form-control" value="${user.major}">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">学号（学生）</label>
+                                        <input type="text" name="studentNo" class="form-control" value="${user.studentNo}">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">班级（学生）</label>
+                                        <input type="text" name="className" class="form-control" value="${user.className}">
                                     </div>
                                     <div class="mb-3">
                                         <label class="form-label">邮箱</label>
@@ -114,7 +138,7 @@
         </tbody>
     </table>
 
-    
+
     <div class="modal fade" id="addUserModal" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -147,8 +171,25 @@
                             <select name="role" class="form-select">
                                 <option value="student" <c:if test="${formRole == 'student'}">selected</c:if>>学生</option>
                                 <option value="teacher" <c:if test="${formRole == 'teacher'}">selected</c:if>>教师</option>
+                                <option value="director" <c:if test="${formRole == 'director'}">selected</c:if>>专业负责人</option>
                                 <option value="admin" <c:if test="${formRole == 'admin'}">selected</c:if>>管理员</option>
                             </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">学院</label>
+                            <input type="text" name="college" class="form-control" value="${formCollege}">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">专业（学生/专业负责人必填）</label>
+                            <input type="text" name="major" class="form-control" value="${formMajor}">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">学号（学生）</label>
+                            <input type="text" name="studentNo" class="form-control" value="${formStudentNo}">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">班级（学生）</label>
+                            <input type="text" name="className" class="form-control" value="${formClassName}">
                         </div>
                         <div class="mb-3">
                             <label class="form-label">邮箱</label>
@@ -178,5 +219,6 @@
             };
         </script>
     </c:if>
+</div>
 
 <%@ include file="/WEB-INF/includes/footer.jsp" %>

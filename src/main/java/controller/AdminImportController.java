@@ -60,11 +60,19 @@ public class AdminImportController extends HttpServlet {
                     String password = fields.get(1).trim();
                     String name = fields.get(2).trim();
                     String role = normalizeRole(fields.get(3).trim());
-                    String email = fields.size() > 4 ? fields.get(4).trim() : "";
-                    String phone = fields.size() > 5 ? fields.get(5).trim() : "";
+                    String college = fields.size() > 4 ? fields.get(4).trim() : "";
+                    String major = fields.size() > 5 ? fields.get(5).trim() : "";
+                    String studentNo = fields.size() > 6 ? fields.get(6).trim() : "";
+                    String className = fields.size() > 7 ? fields.get(7).trim() : "";
+                    String email = fields.size() > 8 ? fields.get(8).trim() : "";
+                    String phone = fields.size() > 9 ? fields.get(9).trim() : "";
 
                     if (username.length() == 0 || name.length() == 0 || role == null) {
                         errors.add("第" + lineNo + "行用户名、姓名或角色不合法。");
+                        continue;
+                    }
+                    if (("student".equals(role) || "director".equals(role)) && major.length() == 0) {
+                        errors.add("第" + lineNo + "行" + role + "必须填写专业(major)。");
                         continue;
                     }
                     if (password.length() == 0) {
@@ -76,8 +84,12 @@ public class AdminImportController extends HttpServlet {
                     user.setPassword(password);
                     user.setName(name);
                     user.setRole(role);
+                    user.setCollege(college.length() == 0 ? null : college);
+                    user.setMajor(major.length() == 0 ? null : major);
+                    user.setStudentNo(studentNo.length() == 0 ? null : studentNo);
+                    user.setClassName(className.length() == 0 ? null : className);
                     user.setEmail(email);
-                    user.setPhone(phone);
+                    user.setPhone(phone.length() == 0 ? null : phone);
                     userDao.upsertImported(user);
                     successCount++;
                 }
@@ -99,7 +111,10 @@ public class AdminImportController extends HttpServlet {
         if ("teacher".equalsIgnoreCase(role) || "教师".equals(role) || "老师".equals(role)) {
             return "teacher";
         }
-        if ("admin".equalsIgnoreCase(role) || "管理员".equals(role) || "教务员".equals(role) || "系主任".equals(role)) {
+        if ("director".equalsIgnoreCase(role) || "专业负责人".equals(role) || "系主任".equals(role)) {
+            return "director";
+        }
+        if ("admin".equalsIgnoreCase(role) || "管理员".equals(role) || "教务员".equals(role)) {
             return "admin";
         }
         return null;

@@ -81,11 +81,6 @@ public class AdminUserController extends HttpServlet {
     }
 
     private void showUserList(HttpServletRequest request) throws Exception {
-        int fixedCount = userDao.fixDuplicatePhones();
-        if (fixedCount > 0) {
-            request.setAttribute("message", "已自动修复 " + fixedCount + " 个重复手机号");
-        }
-
         String roleFilter = request.getParameter("role");
         if ("POST".equalsIgnoreCase(request.getMethod())) {
             roleFilter = request.getParameter("roleFilter");
@@ -136,8 +131,21 @@ public class AdminUserController extends HttpServlet {
     private void fillUserInfo(HttpServletRequest request, User user) {
         user.setName(request.getParameter("name"));
         user.setRole(request.getParameter("role"));
+        user.setCollege(emptyToNull(request.getParameter("college")));
+        user.setMajor(emptyToNull(request.getParameter("major")));
+        user.setStudentNo(emptyToNull(request.getParameter("studentNo")));
+        user.setClassName(emptyToNull(request.getParameter("className")));
         user.setEmail(request.getParameter("email"));
-        user.setPhone(request.getParameter("phone"));
+        user.setPhone(emptyToNull(request.getParameter("phone")));
+        Integer status = ParamUtil.getInt(request, "status");
+        user.setStatus(status == null ? 1 : status.intValue());
+    }
+
+    private String emptyToNull(String value) {
+        if (value == null || value.trim().length() == 0) {
+            return null;
+        }
+        return value.trim();
     }
 
     private void keepAddForm(HttpServletRequest request) {
@@ -146,6 +154,10 @@ public class AdminUserController extends HttpServlet {
         request.setAttribute("formPassword", request.getParameter("password"));
         request.setAttribute("formName", request.getParameter("name"));
         request.setAttribute("formRole", request.getParameter("role"));
+        request.setAttribute("formCollege", request.getParameter("college"));
+        request.setAttribute("formMajor", request.getParameter("major"));
+        request.setAttribute("formStudentNo", request.getParameter("studentNo"));
+        request.setAttribute("formClassName", request.getParameter("className"));
         request.setAttribute("formEmail", request.getParameter("email"));
         request.setAttribute("formPhone", request.getParameter("phone"));
     }

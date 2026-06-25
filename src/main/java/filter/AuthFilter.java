@@ -53,7 +53,6 @@ public class AuthFilter implements Filter {
         
         String role = loginUser.getRole();
         if (path.startsWith("/admin/") && !"admin".equals(role)) {
-            
             resp.sendRedirect(req.getContextPath() + "/dashboard.action");
             return;
         }
@@ -61,6 +60,10 @@ public class AuthFilter implements Filter {
             resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
             resp.setContentType("application/json;charset=UTF-8");
             resp.getWriter().write("{\"success\":false,\"message\":\"\\u65e0\\u6743\\u9650\"}");
+            return;
+        }
+        if (path.startsWith("/director/") && !"director".equals(role)) {
+            resp.sendRedirect(req.getContextPath() + "/dashboard.action");
             return;
         }
         if (path.startsWith("/teacher/") && !"teacher".equals(role)) {

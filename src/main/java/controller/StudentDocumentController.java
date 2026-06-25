@@ -1,11 +1,12 @@
 package controller;
 
 import bean.Document;
-import bean.TopicSelection;
+import bean.FinalAssignment;
 import bean.User;
 import dao.DocumentDao;
+import dao.FinalAssignmentDao;
 import dao.SystemSettingDao;
-import dao.TopicSelectionDao;
+import util.Stage;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
@@ -25,7 +26,7 @@ import java.io.IOException;
 public class StudentDocumentController extends HttpServlet {
 
     private DocumentDao documentDao = new DocumentDao();
-    private TopicSelectionDao selectionDao = new TopicSelectionDao();
+    private FinalAssignmentDao assignmentDao = new FinalAssignmentDao();
     private SystemSettingDao settingDao = new SystemSettingDao();
     private static final String LIST_PAGE = "/student/documents.action";
     private static final String JSP_PAGE = "/WEB-INF/jsp/student/documents.jsp";
@@ -61,17 +62,18 @@ public class StudentDocumentController extends HttpServlet {
 
     private void showDocumentPage(HttpServletRequest request, User user) throws Exception {
         request.setAttribute("documents", documentDao.findByStudent(user.getId()));
-        request.setAttribute("selection", selectionDao.findApprovedByStudent(user.getId()));
-        request.setAttribute("documentUploadOpen", settingDao.isOpen("document_upload_open"));
+        request.setAttribute("assignment", assignmentDao.findByStudent(user.getId()));
+        request.setAttribute("documentUploadOpen", settingDao.isOpen(Stage.DOCUMENT_UPLOAD_OPEN));
     }
 
     private void submitDocument(HttpServletRequest request, User user) throws Exception {
-        if (!settingDao.isOpen("document_upload_open")) {
+        if (!settingDao.isOpen(Stage.DOCUMENT_UPLOAD_OPEN)) {
             return;
         }
 
-        TopicSelection selection = selectionDao.findApprovedByStudent(user.getId());
-        if (selection == null) {
+        // 没有最终分配题目的学生不能上传资料
+        FinalAssignment assignment = assignmentDao.findByStudent(user.getId());
+        if (assignment == null) {
             return;
         }
 
@@ -79,15 +81,15 @@ public class StudentDocumentController extends HttpServlet {
         String fileName = getSubmittedFileName(filePart);
         String filePath = saveUploadFile(filePart, fileName, user.getId());
 
-        Document document = buildDocument(request, user, selection, fileName, filePath);
+        Document document = buildDocument(request, user, assignment, fileName, filePath);
         documentDao.insert(document);
     }
 
-    private Document buildDocument(HttpServletRequest request, User user, TopicSelection selection,
+    private Document buildDocument(HttpServletRequest request, User user, FinalAssignment assignment,
                                    String fileName, String filePath) {
         Document document = new Document();
         document.setStudentId(user.getId());
-        document.setTopicId(selection.getTopicId());
+        document.setTopicId(assignment.getTopicId());
         document.setType(request.getParameter("type"));
         document.setContent(request.getParameter("content"));
         document.setFileName(fileName);

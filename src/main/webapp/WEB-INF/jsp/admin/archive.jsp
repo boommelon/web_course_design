@@ -37,8 +37,8 @@
         <div class="col-md-3 mb-3">
             <div class="card">
                 <div class="card-body">
-                    <h6 class="text-muted">答辩成绩</h6>
-                    <h3>${defenseScoreCount}</h3>
+                    <h6 class="text-muted">最终分配数</h6>
+                    <h3>${assignmentCount}</h3>
                 </div>
             </div>
         </div>
@@ -57,7 +57,7 @@
                     <td>${reviewedDocumentCount}</td>
                 </tr>
                 <tr>
-                    <th>教师自评互评记录数</th>
+                    <th>成绩评定记录数</th>
                     <td>${evaluationCount}</td>
                 </tr>
                 <tr>

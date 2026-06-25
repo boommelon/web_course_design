@@ -30,6 +30,19 @@ public class SystemSettingDao {
         return "true".equals(getValue(key));
     }
 
+    /** 读取整数型设置（如 current_round），解析失败返回默认值。 */
+    public int getInt(String key, int def) throws SQLException {
+        String value = getValue(key);
+        if (value == null) {
+            return def;
+        }
+        try {
+            return Integer.parseInt(value.trim());
+        } catch (NumberFormatException e) {
+            return def;
+        }
+    }
+
     public String getValue(String key) throws SQLException {
         String sql = "SELECT setting_value FROM system_settings WHERE setting_key=?";
         ResultSet rs = SQLHelper.executeQuery(sql, key);

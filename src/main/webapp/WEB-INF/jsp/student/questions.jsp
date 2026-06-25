@@ -10,8 +10,8 @@
     </div>
 
     <c:choose>
-        <c:when test="${selection == null}">
-            <div class="alert alert-warning">选题通过后才能向指导教师提问。</div>
+        <c:when test="${assignment == null}">
+            <div class="alert alert-warning">分配到最终题目后才能向指导教师提问。</div>
         </c:when>
         <c:otherwise>
             <div class="card mb-4">
@@ -19,7 +19,7 @@
                 <div class="card-body">
                     <form action="${pageContext.request.contextPath}/student/questions.action" method="post">
                         <input type="hidden" name="teacherId" value="${topic.teacherId}">
-                        <p>当前课题：<strong>${selection.topicTitle}</strong>，指导教师：<strong>${topic.teacherName}</strong></p>
+                        <p>当前题目：<strong>${assignment.topicTitle}</strong>，指导教师：<strong>${topic.teacherName}</strong></p>
                         <div class="mb-3">
                             <label class="form-label">问题内容</label>
                             <textarea name="question" class="form-control" rows="4" required></textarea>

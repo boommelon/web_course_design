@@ -1,10 +1,10 @@
 package controller;
 
-import bean.TopicSelection;
+import bean.FinalAssignment;
 import bean.User;
+import dao.FinalAssignmentDao;
 import dao.QuestionDao;
 import dao.TopicDao;
-import dao.TopicSelectionDao;
 import util.ParamUtil;
 
 import javax.servlet.ServletException;
@@ -15,7 +15,7 @@ import java.io.IOException;
 
 public class StudentQuestionController extends HttpServlet {
     private QuestionDao questionDao = new QuestionDao();
-    private TopicSelectionDao selectionDao = new TopicSelectionDao();
+    private FinalAssignmentDao assignmentDao = new FinalAssignmentDao();
     private TopicDao topicDao = new TopicDao();
 
     @Override
@@ -23,10 +23,10 @@ public class StudentQuestionController extends HttpServlet {
             throws ServletException, IOException {
         User user = (User) request.getSession().getAttribute("loginUser");
         try {
-            TopicSelection selection = selectionDao.findApprovedByStudent(user.getId());
-            request.setAttribute("selection", selection);
-            if (selection != null) {
-                request.setAttribute("topic", topicDao.findById(selection.getTopicId()));
+            FinalAssignment assignment = assignmentDao.findByStudent(user.getId());
+            request.setAttribute("assignment", assignment);
+            if (assignment != null) {
+                request.setAttribute("topic", topicDao.findById(assignment.getTopicId()));
             }
             request.setAttribute("questions", questionDao.findByStudent(user.getId()));
         } catch (Exception e) {
@@ -41,14 +41,14 @@ public class StudentQuestionController extends HttpServlet {
             throws ServletException, IOException {
         User user = (User) request.getSession().getAttribute("loginUser");
         try {
-            TopicSelection selection = selectionDao.findApprovedByStudent(user.getId());
-            if (selection != null) {
+            FinalAssignment assignment = assignmentDao.findByStudent(user.getId());
+            if (assignment != null) {
                 Integer teacherId = ParamUtil.getInt(request, "teacherId");
                 if (teacherId == null) {
                     response.sendRedirect(request.getContextPath() + "/student/questions.action");
                     return;
                 }
-                questionDao.insert(user.getId(), teacherId, selection.getTopicId(), request.getParameter("question"));
+                questionDao.insert(user.getId(), teacherId, assignment.getTopicId(), request.getParameter("question"));
             }
         } catch (Exception e) {
             e.printStackTrace();

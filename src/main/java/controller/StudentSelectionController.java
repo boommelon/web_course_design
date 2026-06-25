@@ -1,9 +1,11 @@
 package controller;
 
 import bean.User;
+import dao.FinalAssignmentDao;
+import dao.SelectionDao;
 import dao.SystemSettingDao;
-import dao.TopicSelectionDao;
-import util.ParamUtil;
+import dao.TopicDao;
+import util.Stage;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -13,14 +15,15 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
- 
-
-
-
-
+/**
+ * 学生选题：提交本轮 1-3 个志愿，查看本轮申请与最终结果。
+ * 业务规则由 SelectionDao 在事务内强校验（至少1最多3、不重复、本专业、每题每轮意向≤3）。
+ */
 public class StudentSelectionController extends HttpServlet {
 
-    private TopicSelectionDao selectionDao = new TopicSelectionDao();
+    private SelectionDao selectionDao = new SelectionDao();
+    private FinalAssignmentDao assignmentDao = new FinalAssignmentDao();
+    private TopicDao topicDao = new TopicDao();
     private SystemSettingDao settingDao = new SystemSettingDao();
     private static final String LIST_PAGE = "/student/selections.action";
     private static final String JSP_PAGE = "/WEB-INF/jsp/student/selections.jsp";
@@ -30,12 +33,22 @@ public class StudentSelectionController extends HttpServlet {
             throws ServletException, IOException {
         User user = (User) request.getSession().getAttribute("loginUser");
         try {
-            showSelectionList(request, user);
+            int round = settingDao.getInt(Stage.CURRENT_ROUND, 1);
+            boolean assigned = assignmentDao.isStudentAssigned(user.getId());
+
+            request.setAttribute("round", round);
+            request.setAttribute("selectionOpen", settingDao.isOpen(Stage.SELECTION_OPEN));
+            request.setAttribute("assigned", assigned);
+            request.setAttribute("myAssignment", assignmentDao.findByStudent(user.getId()));
+            request.setAttribute("myApplication",
+                    selectionDao.findApplicationWithChoices(user.getId(), round));
+            request.setAttribute("topics",
+                    topicDao.findSelectableByMajor(user.getCollege(), user.getMajor()));
+            request.setAttribute("canSelect", settingDao.isOpen(Stage.SELECTION_OPEN) && !assigned);
         } catch (Exception e) {
             e.printStackTrace();
             throw new ServletException(e);
         }
-
         request.getRequestDispatcher(JSP_PAGE).forward(request, response);
     }
 
@@ -43,92 +56,62 @@ public class StudentSelectionController extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         User user = (User) request.getSession().getAttribute("loginUser");
-
         try {
-            applyTopic(request, user);
+            if (!settingDao.isOpen(Stage.SELECTION_OPEN)) {
+                request.getSession().setAttribute("flash", "当前未开放选题");
+            } else if (assignmentDao.isStudentAssigned(user.getId())) {
+                request.getSession().setAttribute("flash", "你已被最终分配题目，无法再次选题");
+            } else {
+                int round = settingDao.getInt(Stage.CURRENT_ROUND, 1);
+                List<Integer> topicIds = getRankedTopicIds(request);
+                SelectionDao.SubmitResult result = selectionDao.submitChoices(user.getId(), topicIds, round);
+                request.getSession().setAttribute("flash", result.message);
+            }
         } catch (Exception e) {
             e.printStackTrace();
             throw new ServletException(e);
         }
-
-        redirectToList(request, response);
+        response.sendRedirect(request.getContextPath() + LIST_PAGE);
     }
 
-    private void showSelectionList(HttpServletRequest request, User user) throws Exception {
-        int roundNo = parseInt(settingDao.getValue("selection_round"), 1);
-        request.setAttribute("selections", selectionDao.findByStudent(user.getId()));
-        request.setAttribute("hasApproved", selectionDao.hasApprovedSelection(user.getId()));
-        request.setAttribute("hasSubmittedCurrentRound", selectionDao.hasSelectionInRound(user.getId(), roundNo));
-        request.setAttribute("studentSelectionOpen", settingDao.isOpen("student_selection_open"));
-        request.setAttribute("selectionRound", roundNo);
-    }
-
-    private void applyTopic(HttpServletRequest request, User user) throws Exception {
-        if (!settingDao.isOpen("student_selection_open")) {
-            return;
+    /**
+     * 按志愿顺序读取题目：优先读 choice1/choice2/choice3（顺序明确），
+     * 否则回退读 topicIds 多选（顺序即数组顺序）。
+     */
+    private List<Integer> getRankedTopicIds(HttpServletRequest request) {
+        List<Integer> ids = new ArrayList<Integer>();
+        boolean hasRanked = false;
+        for (int rank = 1; rank <= 3; rank++) {
+            Integer id = parsePositive(request.getParameter("choice" + rank));
+            if (id != null) {
+                ids.add(id);
+                hasRanked = true;
+            }
         }
-
-        int roundNo = parseInt(settingDao.getValue("selection_round"), 1);
-        if (selectionDao.hasApprovedSelection(user.getId())
-                || selectionDao.hasSelectionInRound(user.getId(), roundNo)) {
-            return;
+        if (hasRanked) {
+            return ids;
         }
-
-        List<Integer> topicIds = getTopicIds(request);
-        if (topicIds.isEmpty()) {
-            return;
-        }
-
-        String reason = request.getParameter("reason");
-        selectionDao.confirmRoundSelections(user.getId(), topicIds, reason, roundNo);
-    }
-
-    private List<Integer> getTopicIds(HttpServletRequest request) {
-        List<Integer> topicIds = new ArrayList<Integer>();
         String[] values = request.getParameterValues("topicIds");
         if (values != null) {
             for (String value : values) {
-                addTopicId(topicIds, value);
+                Integer id = parsePositive(value);
+                if (id != null) {
+                    ids.add(id);
+                }
             }
         }
-
-        if (topicIds.isEmpty()) {
-            Integer topicId = ParamUtil.getInt(request, "topicId");
-            if (topicId != null) {
-                topicIds.add(topicId);
-            }
-        }
-
-        return topicIds;
+        return ids;
     }
 
-    private void addTopicId(List<Integer> topicIds, String value) {
+    private Integer parsePositive(String value) {
         if (value == null) {
-            return;
+            return null;
         }
         try {
-            int topicId = Integer.parseInt(value.trim());
-            if (topicId > 0) {
-                topicIds.add(topicId);
-            }
+            int id = Integer.parseInt(value.trim());
+            return id > 0 ? Integer.valueOf(id) : null;
         } catch (NumberFormatException e) {
-            
+            return null;
         }
-    }
-
-    private int parseInt(String value, int def) {
-        if (value == null) {
-            return def;
-        }
-        try {
-            return Integer.parseInt(value.trim());
-        } catch (NumberFormatException e) {
-            return def;
-        }
-    }
-
-    private void redirectToList(HttpServletRequest request, HttpServletResponse response)
-            throws IOException {
-        response.sendRedirect(request.getContextPath() + LIST_PAGE);
     }
 }

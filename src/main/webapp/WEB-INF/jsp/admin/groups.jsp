@@ -6,32 +6,45 @@
 
 <div class="main-content">
     <div class="page-header">
-        <h4>教师分组</h4>
+        <h4>最终分配</h4>
+        <span>全校（只读）</span>
     </div>
 
-    <p class="text-muted">系统按已确定选题自动形成指导教师分组，用于后续文档审核、答疑和答辩评分。</p>
+    <p class="text-muted">系统按最终分配结果形成指导关系，用于后续文档审核、答疑和成绩评定。</p>
 
     <table class="table table-bordered table-hover">
         <thead class="table-light">
             <tr>
                 <th>学生</th>
-                <th>课题</th>
-                <th>选题轮次</th>
-                <th>状态</th>
+                <th>学号</th>
+                <th>专业</th>
+                <th>题目</th>
+                <th>指导教师</th>
+                <th>来源</th>
             </tr>
         </thead>
         <tbody>
-            <c:forEach var="sel" items="${selections}">
-                <c:if test="${sel.status == 'approved'}">
-                    <tr>
-                        <td>${sel.studentName}</td>
-                        <td>${sel.topicTitle}</td>
-                        <td>第${sel.roundNo}轮</td>
-                        <td><span class="badge bg-success">已分组</span></td>
-                    </tr>
-                </c:if>
+            <c:forEach var="fa" items="${assignments}">
+                <tr>
+                    <td>${fa.studentName}</td>
+                    <td>${fa.studentNo}</td>
+                    <td>${fa.major}</td>
+                    <td>${fa.topicTitle}</td>
+                    <td>${fa.teacherName}</td>
+                    <td>
+                        <c:choose>
+                            <c:when test="${fa.source == 'round1'}">第一轮</c:when>
+                            <c:when test="${fa.source == 'round2'}">第二轮</c:when>
+                            <c:otherwise>强制分配</c:otherwise>
+                        </c:choose>
+                    </td>
+                </tr>
             </c:forEach>
+            <c:if test="${empty assignments}">
+                <tr><td colspan="6" class="text-center text-muted">暂无最终分配</td></tr>
+            </c:if>
         </tbody>
     </table>
+</div>
 
 <%@ include file="/WEB-INF/includes/footer.jsp" %>

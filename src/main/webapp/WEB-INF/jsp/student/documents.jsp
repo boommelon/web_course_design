@@ -10,20 +10,20 @@
     </div>
 
     
-    <c:if test="${selection == null}">
-        <div class="alert alert-warning">您的选题尚未通过审批，暂时无法提交文档。</div>
+    <c:if test="${assignment == null}">
+        <div class="alert alert-warning">你尚未被分配最终题目，暂时无法提交资料。</div>
     </c:if>
 
-    <c:if test="${selection != null && !documentUploadOpen}">
-        <div class="alert alert-warning">当前文档上传系统已关闭，暂时无法提交新文档。</div>
+    <c:if test="${assignment != null && !documentUploadOpen}">
+        <div class="alert alert-warning">当前资料上传系统已关闭，暂时无法提交新资料。</div>
     </c:if>
 
-    
-    <c:if test="${selection != null && documentUploadOpen}">
+
+    <c:if test="${assignment != null && documentUploadOpen}">
         <div class="card mb-4">
             <div class="card-header">提交新文档</div>
             <div class="card-body">
-                <p>当前课题：<strong>${selection.topicTitle}</strong></p>
+                <p>当前题目：<strong>${assignment.topicTitle}</strong></p>
                 <form action="${pageContext.request.contextPath}/student/documents.action" method="post" enctype="multipart/form-data">
                     <div class="mb-3">
                         <label class="form-label">文档类型</label>

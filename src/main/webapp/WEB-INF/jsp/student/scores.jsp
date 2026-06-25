@@ -10,33 +10,31 @@
     </div>
 
     <div class="card mb-4">
-        <div class="card-header">答辩成绩</div>
+        <div class="card-header">最终题目</div>
         <div class="card-body">
             <c:choose>
-                <c:when test="${defenseScore != null}">
-                    <p class="mb-1">课题：<strong>${defenseScore.topicTitle}</strong></p>
-                    <p class="mb-1">答辩成绩：<strong>${defenseScore.score}</strong> 分</p>
-                    <p class="mb-0">答辩意见：${defenseScore.comment != null ? defenseScore.comment : '暂无意见'}</p>
+                <c:when test="${assignment != null}">
+                    <p class="mb-1">题目：<strong>${assignment.topicTitle}</strong></p>
+                    <p class="mb-0">指导教师：${assignment.teacherName}</p>
                 </c:when>
                 <c:otherwise>
-                    <p class="text-muted mb-0">暂无答辩成绩。</p>
+                    <p class="text-muted mb-0">尚未分配到最终题目。</p>
                 </c:otherwise>
             </c:choose>
         </div>
     </div>
 
     <div class="card mb-4">
-        <div class="card-header">自评互评与综合成绩</div>
+        <div class="card-header">成绩与评语</div>
         <div class="card-body">
             <c:choose>
                 <c:when test="${evaluation != null}">
-                    <p class="mb-1">课题：<strong>${evaluation.topicTitle}</strong></p>
-                    <p class="mb-1">综合成绩：<strong>${evaluation.score}</strong> 分</p>
-                    <p class="mb-1">教师自评意见：${evaluation.selfComment}</p>
-                    <p class="mb-0">互评意见：${evaluation.peerComment}</p>
+                    <p class="mb-1">题目：<strong>${evaluation.topicTitle}</strong></p>
+                    <p class="mb-1">最终成绩：<strong>${evaluation.score}</strong> 分</p>
+                    <p class="mb-0">教师评语：${evaluation.comment != null ? evaluation.comment : '暂无评语'}</p>
                 </c:when>
                 <c:otherwise>
-                    <p class="text-muted mb-0">暂无自评互评成绩。</p>
+                    <p class="text-muted mb-0">暂无成绩。</p>
                 </c:otherwise>
             </c:choose>
         </div>

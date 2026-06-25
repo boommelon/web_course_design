@@ -200,17 +200,6 @@
         <url-pattern>/teacher/topics.action</url-pattern>
     </servlet-mapping>
 
-    
-    <servlet>
-        <servlet-name>TeacherSelectionController</servlet-name>
-        <servlet-class>controller.TeacherSelectionController</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>TeacherSelectionController</servlet-name>
-        <url-pattern>/teacher/selections.action</url-pattern>
-    </servlet-mapping>
-
-    
     <servlet>
         <servlet-name>TeacherDocumentController</servlet-name>
         <servlet-class>controller.TeacherDocumentController</servlet-class>
@@ -250,17 +239,6 @@
         <url-pattern>/teacher/questions.action</url-pattern>
     </servlet-mapping>
 
-    
-    <servlet>
-        <servlet-name>TeacherDefenseController</servlet-name>
-        <servlet-class>controller.TeacherDefenseController</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>TeacherDefenseController</servlet-name>
-        <url-pattern>/teacher/defense.action</url-pattern>
-    </servlet-mapping>
-
-    
     <servlet>
         <servlet-name>TeacherEvaluationController</servlet-name>
         <servlet-class>controller.TeacherEvaluationController</servlet-class>
@@ -268,6 +246,34 @@
     <servlet-mapping>
         <servlet-name>TeacherEvaluationController</servlet-name>
         <url-pattern>/teacher/evaluations.action</url-pattern>
+    </servlet-mapping>
+
+
+    <servlet>
+        <servlet-name>DirectorTopicReviewController</servlet-name>
+        <servlet-class>controller.DirectorTopicReviewController</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>DirectorTopicReviewController</servlet-name>
+        <url-pattern>/director/topics.action</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>DirectorConfirmController</servlet-name>
+        <servlet-class>controller.DirectorConfirmController</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>DirectorConfirmController</servlet-name>
+        <url-pattern>/director/confirm.action</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>DirectorAssignController</servlet-name>
+        <servlet-class>controller.DirectorAssignController</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>DirectorAssignController</servlet-name>
+        <url-pattern>/director/assign.action</url-pattern>
     </servlet-mapping>
 
     

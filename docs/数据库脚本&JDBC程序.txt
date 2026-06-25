@@ -1,0 +1,155 @@
+CREATE DATABASE IF NOT EXISTS support;
+
+USE support;
+CREATE TABLE customers (
+  customerID char(8) primary key,
+  name char(40) default NULL,
+  phone char(16) default NULL
+);
+
+INSERT INTO customers VALUES ('ADDIFK01','Frank Addinsell','(718) 555-3911');
+INSERT INTO customers VALUES ('ALBIBB01','Bob Albinoni','(213) 555-7566');
+INSERT INTO customers VALUES ('ALBRDE01','Dave Albrechtsberger','(508) 555-1216');
+INSERT INTO customers VALUES ('ALKAJM01','Jim Alkan','(832) 555-5617');
+INSERT INTO customers VALUES ('ARENDE01','Dave Arensky','(604) 555-5461');
+INSERT INTO customers VALUES ('AUBEJL01','Jill Auber','(832) 555-8480');
+INSERT INTO customers VALUES ('BAZZJL01','Jill Bazzini','(213) 555-7252');
+INSERT INTO customers VALUES ('BELLJR01','Jennifer Bellini','(215) 555-4485');
+INSERT INTO customers VALUES ('BENDJN01','John Benda','(313) 555-0963');
+INSERT INTO customers VALUES ('BOCHRD01','Richard Bochsa','(203) 555-0440');
+INSERT INTO customers VALUES ('BOYCDA01','Donna Boyce','(215) 555-3444');
+INSERT INTO customers VALUES ('CHERFK01','Frank Cherubini','(718) 555-2303');
+INSERT INTO customers VALUES ('CHOPED01','Ed Chopin','(516) 555-4544');
+INSERT INTO customers VALUES ('CRAMHH01','Hugh Cramer','(203) 555-8205');
+INSERT INTO customers VALUES ('CROFJL01','Jill Croft','(213) 555-8917');
+INSERT INTO customers VALUES ('ERKEMY01','Molly Erkel','(604) 555-9825');
+INSERT INTO customers VALUES ('FIELKE01','Kate Field','(718) 555-9283');
+INSERT INTO customers VALUES ('FROBJN01','John Froberger','(212) 555-0743');
+INSERT INTO customers VALUES ('GADEDE01','Dave Gade','(914) 555-1135');
+INSERT INTO customers VALUES ('GODAAA01','Amanda Godard','(914) 555-4063');
+INSERT INTO customers VALUES ('GRIEFK01','Frank Grieg','(832) 555-9236');
+INSERT INTO customers VALUES ('HOLSJL01','Jill Holst','(516) 555-2656');
+INSERT INTO customers VALUES ('LITOKE01','Kate Litolff','(215) 555-8297');
+INSERT INTO customers VALUES ('LOCARD01','Richard Locatelli','(832) 555-9968');
+INSERT INTO customers VALUES ('MERCDE01','Dave Mercadante','(314) 555-5242');
+INSERT INTO customers VALUES ('MEYERD01','Richard Meyerbeer','(213) 555-3854');
+INSERT INTO customers VALUES ('MILLJN01','John Milloecker','(415) 555-9714');
+INSERT INTO customers VALUES ('MOLIER01','Eleanor Molique','(314) 555-6432');
+INSERT INTO customers VALUES ('PAGAER01','Eleanor Paganini','(314) 555-4173');
+INSERT INTO customers VALUES ('PERGJN01','John Pergolesi','(919) 555-5871');
+INSERT INTO customers VALUES ('PUCCLN01','Lillian Puccini','(516) 555-6366');
+INSERT INTO customers VALUES ('PURCFK01','Frank Purcell','(516) 555-7542');
+INSERT INTO customers VALUES ('RHEIJM01','Jim Rheinberger','(212) 555-6343');
+INSERT INTO customers VALUES ('SATIJR01','Jennifer Satie','(919) 555-8285');
+INSERT INTO customers VALUES ('SCARHH01','Hugh Scarlatti','(508) 555-8820');
+INSERT INTO customers VALUES ('SCHUBB01','Bob Schumann','(832) 555-5021');
+INSERT INTO customers VALUES ('STRAJN01','John Strauss','(202) 555-0734');
+INSERT INTO customers VALUES ('SULLJN01','John Sullivan','(206) 555-3674');
+INSERT INTO customers VALUES ('TARTAA01','Amanda Tartini','(212) 555-4697');
+INSERT INTO customers VALUES ('TELEHH01','Hugh Telemann','(718) 555-2808');
+INSERT INTO customers VALUES ('TOREFK01','Frank Torelli','(832) 555-2751');
+INSERT INTO customers VALUES ('VERDJN01','John Verdi','(914) 555-4544');
+INSERT INTO customers VALUES ('VITADA01','Donna Vitali','(313) 555-2885');
+INSERT INTO customers VALUES ('VIVALN01','Lillian Vivaldi','(832) 555-9693');
+INSERT INTO customers VALUES ('WAGNER01','Eleanor Wagner','(213) 555-4183');
+INSERT INTO customers VALUES ('WEBEJN01','John Webern','(832) 555-0664');
+INSERT INTO customers VALUES ('WESLJE01','Jane Wesley','(215) 555-6669');
+
+
+package bean;
+
+public class Customer {
+	private String id, name, phone;
+    public Customer() {
+    	
+    }
+    
+	public Customer(String id, String name, String phone) {
+		super();
+		this.id = id;
+		this.name = name;
+		this.phone = phone;
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getPhone() {
+		return phone;
+	}
+
+	public void setPhone(String phone) {
+		this.phone = phone;
+	}
+}
+
+package dao;
+import java.util.List;
+import java.sql.*;
+import java.util.ArrayList;
+import bean.Customer;
+public class CustomerDao {
+  private String driver="com.mysql.jdbc.Driver";
+  private String url="jdbc:mysql://127.0.0.1:3306/support",dbuser="root",dbpwd="1234";
+  public List<Customer> queryAllCustomers(){
+	  List<Customer> cusList=new ArrayList<Customer>();
+	  try {
+		  Class.forName(driver);
+		  Connection conn=DriverManager.getConnection(url,dbuser,dbpwd);
+		  Statement cmd=conn.createStatement();
+		  ResultSet rs=cmd.executeQuery("select * from customers");
+		  while(rs.next()) {
+			  String id=rs.getString("customerID");
+			  String name=rs.getString("name");
+			  String phone=rs.getString("phone");
+			  Customer cus=new Customer(id,name,phone);
+			  cusList.add(cus);
+		  }
+		  conn.close();
+	  }catch(Exception ex) {
+		  ex.printStackTrace();
+	  }
+	  return cusList;
+  }
+  public static void main(String[] args) {
+	  CustomerDao dao=new CustomerDao();
+	  System.out.println(dao.queryAllCustomers().size());
+  }
+}
+
+<%@ page language="java" import="java.util.*,bean.Customer,dao.CustomerDao"  
+    contentType="text/html; charset=utf-8"%>
+<!DOCTYPE html>
+<html>
+  <body>
+	<table width="90%" border="1">
+	  <%
+	   CustomerDao dao=new CustomerDao();
+	   List<Customer> cusList=dao.queryAllCustomers();
+	   for(Customer cus:cusList){
+		   out.println("<tr>");
+		   out.println("<td>"+cus.getId()+"</td>");
+		   out.println("<td>"+cus.getName()+"</td>");
+		   out.println("<td>"+cus.getPhone()+"</td>");
+		   out.println("</tr>");
+	   }
+	  %>
+	</table>
+	  
+  </body>
+</html>
+
+

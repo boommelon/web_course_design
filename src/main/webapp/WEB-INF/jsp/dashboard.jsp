@@ -15,18 +15,42 @@
         <table class="table table-bordered">
             <thead class="table-light">
                 <tr>
+                    <th>专业负责人</th>
                     <th>教师人数</th>
                     <th>学生人数</th>
-                    <th>课题数量</th>
-                    <th>已选题学生</th>
+                    <th>题目数量</th>
+                    <th>已最终分配</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
+                    <td>${directorCount}</td>
                     <td>${teacherCount}</td>
                     <td>${studentCount}</td>
                     <td>${topicCount}</td>
-                    <td>${selectedCount}</td>
+                    <td>${assignedCount}</td>
+                </tr>
+            </tbody>
+        </table>
+    </c:if>
+
+    <c:if test="${sessionScope.loginUser.role == 'director'}">
+        <h5>本专业概览（${major} · 第 ${round} 轮）</h5>
+        <table class="table table-bordered">
+            <thead class="table-light">
+                <tr>
+                    <th>待审题目</th>
+                    <th>本专业学生</th>
+                    <th>本轮已提交志愿</th>
+                    <th>已最终分配</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>${pendingTopicCount}</td>
+                    <td>${studentCount}</td>
+                    <td>${submittedCount}</td>
+                    <td>${assignedCount}</td>
                 </tr>
             </tbody>
         </table>
@@ -37,15 +61,15 @@
         <table class="table table-bordered">
             <thead class="table-light">
                 <tr>
-                    <th>我的课题</th>
-                    <th>待确认选题</th>
+                    <th>我的题目</th>
+                    <th>指导学生</th>
                     <th>待审核文档</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
                     <td>${topicCount}</td>
-                    <td>${pendingSelections}</td>
+                    <td>${myStudentCount}</td>
                     <td>${pendingDocuments}</td>
                 </tr>
             </tbody>
@@ -57,7 +81,7 @@
         <table class="table table-bordered">
             <thead class="table-light">
                 <tr>
-                    <th>我的选题</th>
+                    <th>我的题目</th>
                     <th>已提交文档</th>
                     <th>系统公告</th>
                 </tr>
@@ -66,8 +90,8 @@
                 <tr>
                     <td>
                         <c:choose>
-                            <c:when test="${mySelection != null}">${mySelection.topicTitle}</c:when>
-                            <c:otherwise>暂未选题</c:otherwise>
+                            <c:when test="${myAssignment != null}">${myAssignment.topicTitle}</c:when>
+                            <c:otherwise>暂未分配</c:otherwise>
                         </c:choose>
                     </td>
                     <td>${docCount}</td>
