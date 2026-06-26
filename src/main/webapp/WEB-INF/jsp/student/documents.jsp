@@ -9,6 +9,10 @@
         <h4>文档提交</h4>
     </div>
 
+    <c:if test="${not empty sessionScope.flash}">
+        <div class="alert alert-info">${sessionScope.flash}</div>
+        <c:remove var="flash" scope="session"/>
+    </c:if>
     
     <c:if test="${assignment == null}">
         <div class="alert alert-warning">你尚未被分配最终题目，暂时无法提交资料。</div>
@@ -36,7 +40,9 @@
                     </div>
                     <div class="mb-3">
                         <label class="form-label">上传文件</label>
-                        <input type="file" name="file" class="form-control" required>
+                        <input type="file" name="file" class="form-control"
+                               accept=".doc,.docx,.pdf,.txt,.zip,.rar,.7z,.java,.sql" required>
+                        <div class="form-text">支持 doc、docx、pdf、txt、zip、rar、7z、java、sql。中期、论文、源代码需按阶段审核通过后提交。</div>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">内容摘要</label>

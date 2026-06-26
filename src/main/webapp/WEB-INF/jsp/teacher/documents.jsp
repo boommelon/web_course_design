@@ -9,6 +9,11 @@
         <h4>文档审核</h4>
     </div>
 
+    <c:if test="${not empty sessionScope.flash}">
+        <div class="alert alert-info">${sessionScope.flash}</div>
+        <c:remove var="flash" scope="session"/>
+    </c:if>
+
     <table class="table table-bordered table-hover">
         <thead class="table-light">
             <tr>

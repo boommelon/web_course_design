@@ -56,7 +56,7 @@
             <div class="card-body">
                 <h5 class="card-title">填报本轮志愿（至少 1 个，最多 3 个，不能重复）</h5>
                 <form action="${pageContext.request.contextPath}/student/selections.action" method="post"
-                      onsubmit="return confirm('确认提交本轮志愿？');">
+                      class="selection-form">
                     <c:forEach var="rank" begin="1" end="3">
                         <div class="mb-2 row">
                             <label class="col-sm-2 col-form-label">第 ${rank} 志愿</label>

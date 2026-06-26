@@ -22,6 +22,7 @@ example/
 
 src/main/webapp/uploads/
 uploads/
+src/main/resources/local-db.properties
 
 .DS_Store
 Thumbs.db

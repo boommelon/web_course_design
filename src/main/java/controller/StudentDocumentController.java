@@ -31,6 +31,10 @@ public class StudentDocumentController extends HttpServlet {
     private static final String LIST_PAGE = "/student/documents.action";
     private static final String JSP_PAGE = "/WEB-INF/jsp/student/documents.jsp";
     private static final String UPLOAD_FOLDER = "/uploads";
+    private static final String[] DOCUMENT_TYPES = {"proposal", "midterm", "final", "source"};
+    private static final String[] ALLOWED_EXTENSIONS = {
+            ".doc", ".docx", ".pdf", ".txt", ".zip", ".rar", ".7z", ".java", ".sql"
+    };
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -68,21 +72,30 @@ public class StudentDocumentController extends HttpServlet {
 
     private void submitDocument(HttpServletRequest request, User user) throws Exception {
         if (!settingDao.isOpen(Stage.DOCUMENT_UPLOAD_OPEN)) {
+            request.getSession().setAttribute("flash", "当前资料上传系统已关闭");
             return;
         }
 
         // 没有最终分配题目的学生不能上传资料
         FinalAssignment assignment = assignmentDao.findByStudent(user.getId());
         if (assignment == null) {
+            request.getSession().setAttribute("flash", "你尚未被分配最终题目，无法提交资料");
             return;
         }
 
         Part filePart = request.getPart("file");
         String fileName = getSubmittedFileName(filePart);
+        String type = request.getParameter("type");
+        String validationError = validateDocumentRequest(user.getId(), type, filePart, fileName);
+        if (validationError != null) {
+            request.getSession().setAttribute("flash", validationError);
+            return;
+        }
         String filePath = saveUploadFile(filePart, fileName, user.getId());
 
         Document document = buildDocument(request, user, assignment, fileName, filePath);
         documentDao.insert(document);
+        request.getSession().setAttribute("flash", "文档提交成功");
     }
 
     private Document buildDocument(HttpServletRequest request, User user, FinalAssignment assignment,
@@ -95,6 +108,63 @@ public class StudentDocumentController extends HttpServlet {
         document.setFileName(fileName);
         document.setFilePath(filePath);
         return document;
+    }
+
+    private String validateDocumentRequest(int studentId, String type, Part filePart, String fileName) throws Exception {
+        if (!isValidDocumentType(type)) {
+            return "文档类型不正确";
+        }
+        if (filePart == null || fileName == null || fileName.length() == 0 || filePart.getSize() == 0) {
+            return "请选择要上传的文件";
+        }
+        if (!isAllowedFileName(fileName)) {
+            return "文件类型不允许，请上传 doc、docx、pdf、txt、zip、rar、7z、java 或 sql 文件";
+        }
+        String stageError = validateStageOrder(studentId, type);
+        if (stageError != null) {
+            return stageError;
+        }
+        return null;
+    }
+
+    private boolean isValidDocumentType(String type) {
+        if (type == null) {
+            return false;
+        }
+        for (String candidate : DOCUMENT_TYPES) {
+            if (candidate.equals(type)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean isAllowedFileName(String fileName) {
+        String lower = fileName.toLowerCase();
+        for (String extension : ALLOWED_EXTENSIONS) {
+            if (lower.endsWith(extension)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private String validateStageOrder(int studentId, String type) throws Exception {
+        if ("midterm".equals(type) && !hasReviewedDocument(studentId, "proposal")) {
+            return "开题报告审核通过后才能提交中期检查";
+        }
+        if ("final".equals(type) && !hasReviewedDocument(studentId, "midterm")) {
+            return "中期检查审核通过后才能提交毕业论文";
+        }
+        if ("source".equals(type) && !hasReviewedDocument(studentId, "final")) {
+            return "毕业论文审核通过后才能提交源代码";
+        }
+        return null;
+    }
+
+    private boolean hasReviewedDocument(int studentId, String type) throws Exception {
+        Document document = documentDao.findLatestByStudentAndType(studentId, type);
+        return document != null && "reviewed".equals(document.getStatus());
     }
 
     private String saveUploadFile(Part filePart, String fileName, int userId) throws IOException {

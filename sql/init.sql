@@ -135,7 +135,8 @@ CREATE TABLE documents (
 );
 
 -- ------------------------------------------------------------
--- 成绩评定(简化版)：指导教师给最终成果一个成绩和评语
+-- 成绩评定：导师自评 40% + 评阅评分 20% + 答辩成绩 40%
+-- 保留 score/comment 旧字段，兼容旧的单一导师评分页面数据
 -- 一个学生一条
 -- ------------------------------------------------------------
 CREATE TABLE evaluations (
@@ -143,13 +144,48 @@ CREATE TABLE evaluations (
     student_id INT NOT NULL,
     topic_id INT NOT NULL,
     teacher_id INT NOT NULL COMMENT '指导教师',
-    score INT COMMENT '最终成绩',
-    comment TEXT COMMENT '教师评语',
+    score INT COMMENT '旧字段：导师自评成绩',
+    comment TEXT COMMENT '旧字段：导师评语',
+    advisor_score INT COMMENT '导师自评成绩',
+    advisor_comment TEXT COMMENT '导师评语',
+    reviewer_teacher_id INT COMMENT '评阅教师ID',
+    reviewer_score INT COMMENT '评阅成绩',
+    reviewer_comment TEXT COMMENT '评阅评语',
+    defense_score INT COMMENT '答辩成绩',
+    defense_comment TEXT COMMENT '答辩评语',
+    final_score DECIMAL(5,2) COMMENT '最终成绩',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     UNIQUE KEY uk_evaluation_student (student_id),
     FOREIGN KEY (student_id) REFERENCES users(id),
     FOREIGN KEY (topic_id) REFERENCES topics(id),
-    FOREIGN KEY (teacher_id) REFERENCES users(id)
+    FOREIGN KEY (teacher_id) REFERENCES users(id),
+    FOREIGN KEY (reviewer_teacher_id) REFERENCES users(id)
+);
+
+-- ------------------------------------------------------------
+-- 评阅/答辩教师分配与评分明细
+-- reviewer: 互评教师，slot_no 固定为 1
+-- defense: 答辩教师，slot_no 为 1/2/3，三位教师评分取平均作为答辩分
+-- ------------------------------------------------------------
+CREATE TABLE evaluation_teacher_scores (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    student_id INT NOT NULL,
+    topic_id INT NOT NULL,
+    teacher_id INT NOT NULL COMMENT '评分教师',
+    score_type ENUM('reviewer','defense') NOT NULL COMMENT '评分类型',
+    slot_no INT NOT NULL DEFAULT 1 COMMENT '同类型第几位教师',
+    score INT COMMENT '评分',
+    comment TEXT COMMENT '评语',
+    assigned_by INT NOT NULL COMMENT '分配人(专业负责人)',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE KEY uk_eval_score_slot (student_id, score_type, slot_no),
+    UNIQUE KEY uk_eval_score_teacher (student_id, score_type, teacher_id),
+    FOREIGN KEY (student_id) REFERENCES users(id),
+    FOREIGN KEY (topic_id) REFERENCES topics(id),
+    FOREIGN KEY (teacher_id) REFERENCES users(id),
+    FOREIGN KEY (assigned_by) REFERENCES users(id)
 );
 
 -- ------------------------------------------------------------
@@ -236,7 +272,11 @@ INSERT INTO users (username, password, name, role, college, major, student_no, c
 INSERT INTO users (username, password, name, role, college, major, student_no, class_name, email, phone) VALUES
 ('teacher01', 'e10adc3949ba59abbe56e057f20f883e', '张老师', 'teacher', '计算机学院', '软件工程', NULL, NULL, 'zhang@example.com', '13800002001'),
 ('teacher02', 'e10adc3949ba59abbe56e057f20f883e', '李老师', 'teacher', '计算机学院', '软件工程', NULL, NULL, 'li@example.com', '13800002002'),
-('teacher03', 'e10adc3949ba59abbe56e057f20f883e', '陈老师', 'teacher', '计算机学院', '计算机科学与技术', NULL, NULL, 'chen@example.com', '13800002003');
+('teacher03', 'e10adc3949ba59abbe56e057f20f883e', '陈老师', 'teacher', '计算机学院', '计算机科学与技术', NULL, NULL, 'chen@example.com', '13800002003'),
+('teacher04', 'e10adc3949ba59abbe56e057f20f883e', '钱老师', 'teacher', '计算机学院', '软件工程', NULL, NULL, 'qian@example.com', '13800002004'),
+('teacher05', 'e10adc3949ba59abbe56e057f20f883e', '郑老师', 'teacher', '计算机学院', '软件工程', NULL, NULL, 'zheng@example.com', '13800002005'),
+('teacher06', 'e10adc3949ba59abbe56e057f20f883e', '冯老师', 'teacher', '计算机学院', '计算机科学与技术', NULL, NULL, 'feng@example.com', '13800002006'),
+('teacher07', 'e10adc3949ba59abbe56e057f20f883e', '蒋老师', 'teacher', '计算机学院', '计算机科学与技术', NULL, NULL, 'jiang@example.com', '13800002007');
 
 -- 学生(软件工程 4 人)
 INSERT INTO users (username, password, name, role, college, major, student_no, class_name, email, phone) VALUES

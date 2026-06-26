@@ -25,18 +25,50 @@
     </div>
 
     <div class="card mb-4">
-        <div class="card-header">成绩与评语</div>
+        <div class="card-header">毕业设计成绩</div>
         <div class="card-body">
-            <c:choose>
-                <c:when test="${evaluation != null}">
-                    <p class="mb-1">题目：<strong>${evaluation.topicTitle}</strong></p>
-                    <p class="mb-1">最终成绩：<strong>${evaluation.score}</strong> 分</p>
-                    <p class="mb-0">教师评语：${evaluation.comment != null ? evaluation.comment : '暂无评语'}</p>
-                </c:when>
-                <c:otherwise>
-                    <p class="text-muted mb-0">暂无成绩。</p>
-                </c:otherwise>
-            </c:choose>
+            <table class="table table-bordered mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>成绩项</th>
+                        <th>权重</th>
+                        <th>成绩</th>
+                        <th>评语</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>导师自评</td>
+                        <td>40%</td>
+                        <td>${evaluation != null && evaluation.advisorScore != null ? evaluation.advisorScore : '待评分'}</td>
+                        <td>${evaluation != null && evaluation.advisorComment != null ? evaluation.advisorComment : '待评分'}</td>
+                    </tr>
+                    <tr>
+                        <td>评阅评分</td>
+                        <td>20%</td>
+                        <td>${evaluation != null && evaluation.reviewerScore != null ? evaluation.reviewerScore : '待评分'}</td>
+                        <td>${evaluation != null && evaluation.reviewerComment != null ? evaluation.reviewerComment : '待评分'}</td>
+                    </tr>
+                    <tr>
+                        <td>答辩成绩</td>
+                        <td>40%</td>
+                        <td>${evaluation != null && evaluation.defenseScore != null ? evaluation.defenseScore : '待评分'}</td>
+                        <td>${evaluation != null && evaluation.defenseComment != null ? evaluation.defenseComment : '待评分'}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>最终成绩</strong></td>
+                        <td>100%</td>
+                        <td colspan="2">
+                            <c:choose>
+                                <c:when test="${evaluation != null && evaluation.finalScore != null}">
+                                    <strong>${evaluation.finalScore}</strong>
+                                </c:when>
+                                <c:otherwise>待完成</c:otherwise>
+                            </c:choose>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </div>
 
@@ -69,7 +101,8 @@
                     <td>
                         <c:choose>
                             <c:when test="${doc.fileName != null}">
-                                <a href="${pageContext.request.contextPath}/documents/download.action?id=${doc.id}" class="btn btn-outline-primary btn-sm">${doc.fileName}</a>
+                                <a href="${pageContext.request.contextPath}/documents/download.action?id=${doc.id}"
+                                   class="btn btn-outline-primary btn-sm">${doc.fileName}</a>
                             </c:when>
                             <c:otherwise>-</c:otherwise>
                         </c:choose>
@@ -84,7 +117,7 @@
                     <td>
                         <c:choose>
                             <c:when test="${doc.score != null}">
-                                <span class="fw-bold">${doc.score}</span>分
+                                <span class="fw-bold">${doc.score}</span> 分
                             </c:when>
                             <c:otherwise>-</c:otherwise>
                         </c:choose>
@@ -92,11 +125,11 @@
                     <td>${doc.feedback != null ? doc.feedback : '暂无反馈'}</td>
                 </tr>
             </c:forEach>
+            <c:if test="${empty documents}">
+                <tr><td colspan="7" class="text-center text-muted">暂无文档成绩记录</td></tr>
+            </c:if>
         </tbody>
     </table>
-
-    <c:if test="${empty documents}">
-        <p class="text-muted text-center">暂无成绩记录</p>
-    </c:if>
+</div>
 
 <%@ include file="/WEB-INF/includes/footer.jsp" %>

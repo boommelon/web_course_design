@@ -6,6 +6,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.io.InputStream;
+import java.util.Properties;
 
  
 
@@ -17,6 +19,7 @@ public class SQLHelper {
     
     
     private static final String DRIVER = "com.mysql.cj.jdbc.Driver";
+    private static final Properties LOCAL_CONFIG = loadLocalConfig();
     private static final String URL = getConfig("GD_DB_URL",
             "jdbc:mysql://localhost:3306/graduation_design?useSSL=false&serverTimezone=Asia/Shanghai&characterEncoding=utf8&allowPublicKeyRetrieval=true");
     private static final String USERNAME = getConfig("GD_DB_USERNAME", "root");
@@ -47,7 +50,31 @@ public class SQLHelper {
         if (envValue != null && envValue.trim().length() > 0) {
             return envValue.trim();
         }
+        String localValue = LOCAL_CONFIG.getProperty(key);
+        if (localValue != null && localValue.trim().length() > 0) {
+            return localValue.trim();
+        }
         return defaultValue;
+    }
+
+    private static Properties loadLocalConfig() {
+        Properties properties = new Properties();
+        InputStream in = null;
+        try {
+            in = SQLHelper.class.getClassLoader().getResourceAsStream("local-db.properties");
+            if (in != null) {
+                properties.load(in);
+            }
+        } catch (Exception e) {
+            
+        } finally {
+            try {
+                if (in != null) in.close();
+            } catch (Exception e) {
+                
+            }
+        }
+        return properties;
     }
 
      

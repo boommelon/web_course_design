@@ -47,12 +47,14 @@ public class SelectionDao {
      * 整个过程在单事务内完成。
      */
     public SubmitResult submitChoices(int studentId, List<Integer> topicIds, int round) throws SQLException {
-        // 去重并保序，过滤非法值
+        // 保序收集并显式拒绝重复志愿，避免把重复项静默去掉后仍提交成功。
         Set<Integer> ordered = new LinkedHashSet<Integer>();
         if (topicIds != null) {
             for (Integer tid : topicIds) {
                 if (tid != null && tid.intValue() > 0) {
-                    ordered.add(tid);
+                    if (!ordered.add(tid)) {
+                        return SubmitResult.fail("志愿题目不能重复");
+                    }
                 }
             }
         }

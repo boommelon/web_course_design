@@ -13,6 +13,10 @@
     <c:if test="${!reviewOpen}">
         <div class="alert alert-warning">当前未开放审题阶段，下方仅供查看。</div>
     </c:if>
+    <c:if test="${not empty sessionScope.flash}">
+        <div class="alert alert-info">${sessionScope.flash}</div>
+        <c:remove var="flash" scope="session"/>
+    </c:if>
 
     <table class="table table-bordered table-hover">
         <thead class="table-light">
@@ -42,14 +46,14 @@
                     </td>
                     <td>${topic.reviewComment}</td>
                     <td>
-                        <c:if test="${reviewOpen && topic.status != 'assigned'}">
+                        <c:if test="${reviewOpen && topic.status == 'pending'}">
                             <button class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#approveModal${topic.id}">通过</button>
                             <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#rejectModal${topic.id}">退回</button>
                         </c:if>
                     </td>
                 </tr>
 
-                <c:if test="${reviewOpen && topic.status != 'assigned'}">
+                <c:if test="${reviewOpen && topic.status == 'pending'}">
                     <div class="modal fade" id="approveModal${topic.id}" tabindex="-1">
                         <div class="modal-dialog"><div class="modal-content">
                             <form action="${pageContext.request.contextPath}/director/topics.action" method="post">

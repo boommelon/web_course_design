@@ -125,12 +125,13 @@ public class TopicDao {
 
     /**
      * 专业负责人审题：通过 approved / 退回 rejected。
+     * 只允许审核 pending 题目；已通过、已退回、已分配的题目不能重复审核。
      * 限定本专业（college+major），防止越权审别专业题目。返回受影响行数。
      */
     public int review(int id, String status, String comment, int reviewerId, String college, String major)
             throws SQLException {
         String sql = "UPDATE topics SET status=?, review_comment=?, reviewer_id=?, review_time=NOW() "
-                + "WHERE id=? AND college=? AND major=? AND status IN ('pending','approved','rejected')";
+                + "WHERE id=? AND college=? AND major=? AND status='pending'";
         return SQLHelper.executeUpdate(sql, status, comment, reviewerId, id, college, major);
     }
 

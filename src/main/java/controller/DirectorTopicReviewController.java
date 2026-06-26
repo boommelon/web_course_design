@@ -46,10 +46,14 @@ public class DirectorTopicReviewController extends HttpServlet {
         try {
             if (id != null && settingDao.isOpen(Stage.TOPIC_REVIEW_OPEN)) {
                 String comment = request.getParameter("comment");
+                int rows = 0;
                 if ("approve".equals(action)) {
-                    topicDao.review(id, "approved", comment, user.getId(), user.getCollege(), user.getMajor());
+                    rows = topicDao.review(id, "approved", comment, user.getId(), user.getCollege(), user.getMajor());
                 } else if ("reject".equals(action)) {
-                    topicDao.review(id, "rejected", comment, user.getId(), user.getCollege(), user.getMajor());
+                    rows = topicDao.review(id, "rejected", comment, user.getId(), user.getCollege(), user.getMajor());
+                }
+                if (rows == 0) {
+                    request.getSession().setAttribute("flash", "只能审核待审核题目，已审核或已分配题目不可重复操作。");
                 }
             }
         } catch (Exception e) {

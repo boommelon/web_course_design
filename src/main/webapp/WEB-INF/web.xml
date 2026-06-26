@@ -276,6 +276,15 @@
         <url-pattern>/director/assign.action</url-pattern>
     </servlet-mapping>
 
+    <servlet>
+        <servlet-name>DirectorEvaluationController</servlet-name>
+        <servlet-class>controller.DirectorEvaluationController</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>DirectorEvaluationController</servlet-name>
+        <url-pattern>/director/evaluations.action</url-pattern>
+    </servlet-mapping>
+
     
     <servlet>
         <servlet-name>StudentTopicController</servlet-name>

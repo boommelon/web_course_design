@@ -60,6 +60,19 @@ public class DocumentDao {
         }
     }
 
+    public Document findLatestByStudentAndType(int studentId, String type) throws SQLException {
+        String sql = baseSql + "WHERE d.student_id = ? AND d.type = ? ORDER BY d.id DESC LIMIT 1";
+        ResultSet rs = SQLHelper.executeQuery(sql, studentId, type);
+        try {
+            if (rs.next()) {
+                return rowToDocument(rs);
+            }
+            return null;
+        } finally {
+            SQLHelper.close(rs);
+        }
+    }
+
      
 
 

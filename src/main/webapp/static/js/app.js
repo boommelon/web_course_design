@@ -5,6 +5,7 @@ $(function () {
     initSidebar();
     initDeleteButtons();
     initUsernameCheck();
+    initSelectionForm();
     initModalFallback();
 
     function initSidebar() {
@@ -120,6 +121,40 @@ $(function () {
         $input.addClass("is-invalid");
         $message.addClass("text-danger").text(text);
         $submit.prop("disabled", true);
+    }
+
+    function initSelectionForm() {
+        $(".selection-form").on("submit", function () {
+            var selected = [];
+            var seen = {};
+            var hasDuplicate = false;
+
+            $(this).find("select[name^='choice']").each(function () {
+                var value = $(this).val();
+                $(this).removeClass("is-invalid");
+
+                if (!value) {
+                    return;
+                }
+                if (seen[value]) {
+                    hasDuplicate = true;
+                    $(this).addClass("is-invalid");
+                } else {
+                    seen[value] = true;
+                    selected.push(value);
+                }
+            });
+
+            if (selected.length === 0) {
+                alert("\u8bf7\u81f3\u5c11\u9009\u62e9 1 \u4e2a\u5fd7\u613f\u9898\u76ee");
+                return false;
+            }
+            if (hasDuplicate) {
+                alert("\u5fd7\u613f\u9898\u76ee\u4e0d\u80fd\u91cd\u590d");
+                return false;
+            }
+            return confirm("\u786e\u8ba4\u63d0\u4ea4\u672c\u8f6e\u5fd7\u613f\uff1f");
+        });
     }
 
     function initModalFallback() {
